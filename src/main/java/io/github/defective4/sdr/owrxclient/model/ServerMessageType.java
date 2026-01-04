@@ -2,8 +2,8 @@ package io.github.defective4.sdr.owrxclient.model;
 
 import java.util.Objects;
 
-import io.github.defective4.sdr.owrxclient.model.message.server.ReceiverDetails;
-import io.github.defective4.sdr.owrxclient.model.message.server.ServerConfig;
+import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
+import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
 
 public enum ServerMessageType {
     CONFIG(ServerConfig.class),

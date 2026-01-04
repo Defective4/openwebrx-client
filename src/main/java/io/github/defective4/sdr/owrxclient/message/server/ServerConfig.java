@@ -1,4 +1,4 @@
-package io.github.defective4.sdr.owrxclient.model.message.server;
+package io.github.defective4.sdr.owrxclient.message.server;
 
 import java.util.Arrays;
 

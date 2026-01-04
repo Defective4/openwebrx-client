@@ -14,6 +14,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
+import io.github.defective4.sdr.owrxclient.message.client.ClientCommand;
 import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
 
 public class OWRXSocket extends WebSocketClient {
@@ -49,7 +50,11 @@ public class OWRXSocket extends WebSocketClient {
 
     @Override
     public void onMessage(ByteBuffer bytes) {
-        System.err.println("Binary: " + bytes.capacity());
+        switch (bytes.get()) {
+            case 0x04 -> {}
+            case 0x02 -> {}
+            default -> {}
+        }
     }
 
     @Override
@@ -96,5 +101,16 @@ public class OWRXSocket extends WebSocketClient {
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {}
+
+    public void sendCommand(ClientCommand command) {
+        send(gson.toJson(command));
+    }
+
+    public void startDSP() {
+        JsonObject root = new JsonObject();
+        root.addProperty("type", "dspcontrol");
+        root.addProperty("action", "start");
+        send(gson.toJson(root));
+    }
 
 }
