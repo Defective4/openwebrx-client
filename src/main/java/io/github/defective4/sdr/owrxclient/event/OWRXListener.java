@@ -1,6 +1,7 @@
 package io.github.defective4.sdr.owrxclient.event;
 
-import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
+import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
+import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
 
 public interface OWRXListener {
     void handshakeReceived(String server, String version);
@@ -9,5 +10,7 @@ public interface OWRXListener {
 
     void lowQualityAudioReceived(byte[] data);
 
-    void serverMessageReceived(ServerMessageType type, Object message);
+    void receiverDetailsReceived(ReceiverDetails serverMessage);
+
+    void serverConfigChanged(ServerConfig config);
 }

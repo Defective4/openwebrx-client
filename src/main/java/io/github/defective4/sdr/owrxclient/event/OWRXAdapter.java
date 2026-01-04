@@ -1,6 +1,7 @@
 package io.github.defective4.sdr.owrxclient.event;
 
-import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
+import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
+import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
 
 public abstract class OWRXAdapter implements OWRXListener {
 
@@ -14,6 +15,9 @@ public abstract class OWRXAdapter implements OWRXListener {
     public void lowQualityAudioReceived(byte[] data) {}
 
     @Override
-    public void serverMessageReceived(ServerMessageType type, Object message) {}
+    public void receiverDetailsReceived(ReceiverDetails serverMessage) {}
+
+    @Override
+    public void serverConfigChanged(ServerConfig config) {}
 
 }

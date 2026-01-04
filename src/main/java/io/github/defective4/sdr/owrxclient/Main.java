@@ -9,7 +9,6 @@ import javax.sound.sampled.SourceDataLine;
 import io.github.defective4.sdr.owrxclient.client.OpenWebRXClient;
 import io.github.defective4.sdr.owrxclient.event.OWRXAdapter;
 import io.github.defective4.sdr.owrxclient.message.client.DSPControlCommand;
-import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
 import io.github.defective4.sdr.owrxclient.model.param.DSPParams;
 
 public class Main {
@@ -37,10 +36,6 @@ public class Main {
                     sdl.write(data, 0, data.length);
                 }
 
-                @Override
-                public void serverMessageReceived(ServerMessageType type, Object message) {
-                    System.out.println(type + ": " + message);
-                }
             });
             client.connect();
         } catch (Exception e) {
