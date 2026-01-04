@@ -9,13 +9,21 @@ import java.util.Objects;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+
+import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
+
 public class OWRXSocket extends WebSocketClient {
 
     private static final String HS_HEADER = "CLIENT DE SERVER";
     private final OpenWebRXClient client;
 
-    private boolean handshakeCompleted;
+    private final Gson gson = new Gson();
 
+    private boolean handshakeCompleted;
     private String serverFlavor, serverVersion;
 
     public OWRXSocket(URI serverUri, OpenWebRXClient client) {
@@ -72,6 +80,17 @@ public class OWRXSocket extends WebSocketClient {
             handshakeCompleted = true;
             client.getListeners().forEach(ls -> ls.handshakeReceived(serverFlavor, serverVersion));
             return;
+        }
+        try {
+            System.err.println(message); // TODO remove
+            JsonObject root = JsonParser.parseString(message).getAsJsonObject();
+            try {
+                ServerMessageType type = ServerMessageType.valueOf(root.get("type").getAsString().toUpperCase());
+                Object serverMessage = gson.fromJson(root.get("value"), type.getModelClass());
+                client.getListeners().forEach(ls -> ls.serverMessageReceived(type, serverMessage));
+            } catch (IllegalArgumentException e) {}
+        } catch (NullPointerException | JsonParseException e) {
+            System.err.println("Invalid JSON message received from server");
         }
     }
 

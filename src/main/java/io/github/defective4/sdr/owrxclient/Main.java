@@ -4,6 +4,7 @@ import java.net.URI;
 
 import io.github.defective4.sdr.owrxclient.client.OpenWebRXClient;
 import io.github.defective4.sdr.owrxclient.event.OWRXAdapter;
+import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
 
 public class Main {
     public static void main(String[] args) {
@@ -14,6 +15,12 @@ public class Main {
                 public void handshakeReceived(String server, String version) {
                     System.out.println(server + ": " + version);
                 }
+
+                @Override
+                public void serverMessageReceived(ServerMessageType type, Object message) {
+                    System.out.println(type + ": " + message);
+                }
+
             });
             client.connect();
         } catch (Exception e) {
