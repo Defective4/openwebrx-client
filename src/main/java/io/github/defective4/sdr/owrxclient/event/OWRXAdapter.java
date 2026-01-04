@@ -2,6 +2,7 @@ package io.github.defective4.sdr.owrxclient.event;
 
 import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
 import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
+import io.github.defective4.sdr.owrxclient.model.Band;
 import io.github.defective4.sdr.owrxclient.model.Bookmark;
 import io.github.defective4.sdr.owrxclient.model.DialFrequency;
 
@@ -27,4 +28,8 @@ public abstract class OWRXAdapter implements OWRXListener {
 
     @Override
     public void bookmarksUpdated(Bookmark[] bookmarks) {}
+
+    @Override
+    public void bandsUpdated(Band[] bands) {}
+
 }
