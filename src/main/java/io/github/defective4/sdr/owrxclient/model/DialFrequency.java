@@ -2,11 +2,11 @@ package io.github.defective4.sdr.owrxclient.model;
 
 public class DialFrequency {
     private final int frequency;
-    private final String mode;
+    private final Modulation mode;
 
     public DialFrequency(int frequency, Modulation mode) {
         this.frequency = frequency;
-        this.mode = mode.name().toLowerCase();
+        this.mode = mode;
     }
 
     public int getFrequency() {
@@ -14,12 +14,7 @@ public class DialFrequency {
     }
 
     public Modulation getMode() {
-        if (mode == null) return Modulation.EMPTY;
-        try {
-            return Modulation.valueOf(mode);
-        } catch (Exception e) {
-            return Modulation.EMPTY;
-        }
+        return mode == null ? Modulation.empty : mode;
     }
 
 }
