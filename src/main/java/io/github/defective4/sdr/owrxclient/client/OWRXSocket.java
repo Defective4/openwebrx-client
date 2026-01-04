@@ -50,9 +50,19 @@ public class OWRXSocket extends WebSocketClient {
 
     @Override
     public void onMessage(ByteBuffer bytes) {
-        switch (bytes.get()) {
-            case 0x04 -> {}
-            case 0x02 -> {}
+        byte type = bytes.get();
+        switch (type) {
+            case 0x02, 0x04 -> {
+                boolean hi = type == 0x04;
+                byte[] data = new byte[bytes.remaining()];
+                bytes.get(data);
+                client.getListeners().forEach(ls -> {
+                    if (hi)
+                        ls.highQualityAudioReceived(data);
+                    else
+                        ls.lowQualityAudioReceived(data);
+                });
+            }
             default -> {}
         }
     }

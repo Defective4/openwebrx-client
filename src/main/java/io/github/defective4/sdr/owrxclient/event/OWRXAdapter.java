@@ -8,6 +8,12 @@ public abstract class OWRXAdapter implements OWRXListener {
     public void handshakeReceived(String server, String version) {}
 
     @Override
+    public void highQualityAudioReceived(byte[] data) {}
+
+    @Override
+    public void lowQualityAudioReceived(byte[] data) {}
+
+    @Override
     public void serverMessageReceived(ServerMessageType type, Object message) {}
 
 }
