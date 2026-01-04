@@ -2,6 +2,7 @@ package io.github.defective4.sdr.owrxclient.event;
 
 import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
 import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
+import io.github.defective4.sdr.owrxclient.model.Bookmark;
 import io.github.defective4.sdr.owrxclient.model.DialFrequency;
 
 public interface OWRXListener {
@@ -16,4 +17,6 @@ public interface OWRXListener {
     void receiverDetailsReceived(ReceiverDetails details);
 
     void serverConfigChanged(ServerConfig config);
+
+    void bookmarksUpdated(Bookmark[] bookmarks);
 }

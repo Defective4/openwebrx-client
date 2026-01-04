@@ -17,6 +17,7 @@ import com.google.gson.JsonParser;
 import io.github.defective4.sdr.owrxclient.message.client.ClientCommand;
 import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
 import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
+import io.github.defective4.sdr.owrxclient.model.Bookmark;
 import io.github.defective4.sdr.owrxclient.model.DialFrequency;
 import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
 
@@ -110,6 +111,7 @@ public class OWRXSocket extends WebSocketClient {
                         case CONFIG -> ls.serverConfigChanged((ServerConfig) serverMessage);
                         case RECEIVER_DETAILS -> ls.receiverDetailsReceived((ReceiverDetails) serverMessage);
                         case DIAL_FREQUENCIES -> ls.dialFrequenciesUpdated((DialFrequency[]) serverMessage);
+                        case BOOKMARKS -> ls.bookmarksUpdated((Bookmark[])serverMessage);
                         default -> {}
                     }
                 });

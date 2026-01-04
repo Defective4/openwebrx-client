@@ -24,7 +24,7 @@ public class Main {
                 @Override
                 public void handshakeReceived(String server, String version) {
                     System.out.println(server + ": " + version);
-                    client.sendCommand(new DSPControlCommand(new DSPParams(-100000, Modulation.wfm, null)));
+                    client.sendCommand(new DSPControlCommand(new DSPParams(400000, Modulation.wfm, null)));
                     client.startDSP();
                 }
 
@@ -35,6 +35,7 @@ public class Main {
 
                 @Override
                 public void lowQualityAudioReceived(byte[] data) {}
+
             });
             client.connect();
         } catch (Exception e) {
