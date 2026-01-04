@@ -6,8 +6,7 @@ import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
 import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
 
 public enum ServerMessageType {
-    CONFIG(ServerConfig.class),
-    RECEIVER_DETAILS(ReceiverDetails.class);
+    CONFIG(ServerConfig.class), DIAL_FREQUENCIES(DialFrequency[].class), RECEIVER_DETAILS(ReceiverDetails.class);
 
     private final Class<?> modelClass;
 

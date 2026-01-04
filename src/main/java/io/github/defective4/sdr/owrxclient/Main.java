@@ -35,7 +35,6 @@ public class Main {
                 public void lowQualityAudioReceived(byte[] data) {
                     sdl.write(data, 0, data.length);
                 }
-
             });
             client.connect();
         } catch (Exception e) {

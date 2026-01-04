@@ -2,8 +2,12 @@ package io.github.defective4.sdr.owrxclient.event;
 
 import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
 import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
+import io.github.defective4.sdr.owrxclient.model.DialFrequency;
 
 public abstract class OWRXAdapter implements OWRXListener {
+
+    @Override
+    public void dialFrequenciesUpdated(DialFrequency[] frequencies) {}
 
     @Override
     public void handshakeReceived(String server, String version) {}
@@ -15,7 +19,7 @@ public abstract class OWRXAdapter implements OWRXListener {
     public void lowQualityAudioReceived(byte[] data) {}
 
     @Override
-    public void receiverDetailsReceived(ReceiverDetails serverMessage) {}
+    public void receiverDetailsReceived(ReceiverDetails details) {}
 
     @Override
     public void serverConfigChanged(ServerConfig config) {}

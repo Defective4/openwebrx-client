@@ -85,16 +85,26 @@ public class DSPParams implements Cloneable {
         return lowCut;
     }
 
-    public String getModulation() {
-        return modulation;
+    public Modulation getModulation() {
+        if (modulation == null) return null;
+        try {
+            return Modulation.valueOf(modulation.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return Modulation.EMPTY;
+        }
     }
 
     public Integer getOffsetFrequency() {
         return offsetFrequency;
     }
 
-    public String getSecondaryModulation() {
-        return secondaryModulation;
+    public Modulation getSecondaryModulation() {
+        if (secondaryModulation == null) return null;
+        try {
+            return Modulation.valueOf(secondaryModulation.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return Modulation.EMPTY;
+        }
     }
 
     public DSPParams withAudioServiceId(Integer audioServiceId) {
