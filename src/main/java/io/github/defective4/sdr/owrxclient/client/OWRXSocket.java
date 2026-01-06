@@ -25,6 +25,7 @@ import io.github.defective4.sdr.owrxclient.model.Band;
 import io.github.defective4.sdr.owrxclient.model.Bookmark;
 import io.github.defective4.sdr.owrxclient.model.DialFrequency;
 import io.github.defective4.sdr.owrxclient.model.Feature;
+import io.github.defective4.sdr.owrxclient.model.ReceiverMode;
 import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
 
 public class OWRXSocket extends WebSocketClient {
@@ -131,6 +132,7 @@ public class OWRXSocket extends WebSocketClient {
                             }
                             ls.featuresUpdated(Collections.unmodifiableList(features));
                         }
+                        case MODES -> ls.receiverModesUpdated((ReceiverMode[]) serverMessage);
                         default -> {}
                     }
                 });

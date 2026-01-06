@@ -8,6 +8,7 @@ import io.github.defective4.sdr.owrxclient.model.Band;
 import io.github.defective4.sdr.owrxclient.model.Bookmark;
 import io.github.defective4.sdr.owrxclient.model.DialFrequency;
 import io.github.defective4.sdr.owrxclient.model.Feature;
+import io.github.defective4.sdr.owrxclient.model.ReceiverMode;
 
 public interface OWRXListener {
     void bandsUpdated(Band[] bands);
@@ -27,6 +28,8 @@ public interface OWRXListener {
     void numberOfClientsUpdated(int clients);
 
     void receiverDetailsReceived(ReceiverDetails details);
+
+    void receiverModesUpdated(ReceiverMode[] modes);
 
     void serverConfigChanged(ServerConfig config);
 }

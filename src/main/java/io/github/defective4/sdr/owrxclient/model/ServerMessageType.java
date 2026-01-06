@@ -10,6 +10,7 @@ public enum ServerMessageType {
     BANDS(Band[].class), BOOKMARKS(Bookmark[].class), CLIENTS(Integer.class),
     CONFIG(ServerConfig.class), DIAL_FREQUENCIES(DialFrequency[].class),
     FEATURES(Map.class),
+    MODES(ReceiverMode[].class),
     RECEIVER_DETAILS(ReceiverDetails.class);
 
     private final Class<?> modelClass;
