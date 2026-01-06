@@ -9,8 +9,10 @@ import io.github.defective4.sdr.owrxclient.event.OWRXListener;
 import io.github.defective4.sdr.owrxclient.message.client.ClientChatCommand;
 import io.github.defective4.sdr.owrxclient.message.client.ClientCommand;
 import io.github.defective4.sdr.owrxclient.message.client.ConnectionPropertiesCommand;
+import io.github.defective4.sdr.owrxclient.message.client.SetFrequencyCommand;
 import io.github.defective4.sdr.owrxclient.model.ChatMessage;
 import io.github.defective4.sdr.owrxclient.model.param.ConnectionParams;
+import io.github.defective4.sdr.owrxclient.model.param.FrequencyParams;
 
 public class OpenWebRXClient {
     private final List<OWRXListener> listeners = new CopyOnWriteArrayList<>();
@@ -34,7 +36,6 @@ public class OpenWebRXClient {
         socket.sendCommand(new ConnectionPropertiesCommand(new ConnectionParams(12000, 48000)));
     }
 
-
     public List<OWRXListener> getListeners() {
         return Collections.unmodifiableList(listeners);
     }
@@ -53,6 +54,14 @@ public class OpenWebRXClient {
 
     public void sendCommand(ClientCommand command) {
         socket.sendCommand(command);
+    }
+
+    public void setCenterFrequency(int frequency) {
+        setCenterFrequency(frequency, null);
+    }
+
+    public void setCenterFrequency(int frequency, String key) {
+        socket.sendCommand(new SetFrequencyCommand(new FrequencyParams(frequency, key)));
     }
 
     public void startDSP() {
