@@ -28,6 +28,7 @@ import io.github.defective4.sdr.owrxclient.message.client.ClientCommand;
 import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
 import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
 import io.github.defective4.sdr.owrxclient.model.Band;
+import io.github.defective4.sdr.owrxclient.model.BatteryInfo;
 import io.github.defective4.sdr.owrxclient.model.Bookmark;
 import io.github.defective4.sdr.owrxclient.model.DialFrequency;
 import io.github.defective4.sdr.owrxclient.model.Feature;
@@ -202,6 +203,7 @@ public class OWRXSocket extends WebSocketClient {
                             }
                         }
                         case CHAT_MESSAGE -> ls.chatMessageReceived((ServerChatMessage) serverMessage);
+                        case BATTERY -> ls.batteryStateUpdated((BatteryInfo) serverMessage);
                         default -> {}
                     }
                 });

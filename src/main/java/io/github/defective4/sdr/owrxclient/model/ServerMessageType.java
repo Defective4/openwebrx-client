@@ -9,10 +9,11 @@ import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
 import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
 
 public enum ServerMessageType {
-    BANDS(Band[].class), BOOKMARKS(Bookmark[].class), CHAT_MESSAGE(ServerChatMessage.class), CLIENTS(Integer.class),
-    CONFIG(ServerConfig.class), CPUUSAGE(Float.class), DIAL_FREQUENCIES(DialFrequency[].class), FEATURES(Map.class),
-    METADATA(JsonObject.class), MODES(ReceiverMode[].class), PROFILES(ReceiverProfile[].class),
-    RECEIVER_DETAILS(ReceiverDetails.class), SMETER(Float.class), TEMPERATURE(Integer.class);
+    BANDS(Band[].class), BATTERY(BatteryInfo.class), BOOKMARKS(Bookmark[].class), CHAT_MESSAGE(ServerChatMessage.class),
+    CLIENTS(Integer.class), CONFIG(ServerConfig.class), CPUUSAGE(Float.class), DIAL_FREQUENCIES(DialFrequency[].class),
+    FEATURES(Map.class), METADATA(JsonObject.class), MODES(ReceiverMode[].class),
+    PROFILES(ReceiverProfile[].class), RECEIVER_DETAILS(ReceiverDetails.class), SMETER(Float.class),
+    TEMPERATURE(Integer.class);
 
     private final Class<?> modelClass;
 
