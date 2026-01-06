@@ -58,11 +58,12 @@ public class OWRXSocket extends WebSocketClient {
 
     private FFTCompression fftCompression = FFTCompression.NONE;
 
+    private boolean fftCompressionForced;
     private int fftSize = 0;
+
     private final Gson gson = new Gson();
 
     private boolean handshakeCompleted;
-
     private String serverFlavor, serverVersion;
 
     public OWRXSocket(URI serverUri, OpenWebRXClient client) {
@@ -73,6 +74,11 @@ public class OWRXSocket extends WebSocketClient {
     public void forceAudioCompression(AudioCompression audioCompression) {
         this.audioCompression = Objects.requireNonNull(audioCompression);
         audioCompressionForced = true;
+    }
+
+    public void forceFFTCompression(FFTCompression fftCompression) {
+        this.fftCompression = Objects.requireNonNull(fftCompression);
+        fftCompressionForced = true;
     }
 
     public Optional<AudioCompression> getAudioCompression() {
@@ -94,6 +100,7 @@ public class OWRXSocket extends WebSocketClient {
     public String getServerVersion() {
         return serverVersion;
     }
+
     @Override
     public void onClose(int code, String reason, boolean remote) {}
 
@@ -203,7 +210,7 @@ public class OWRXSocket extends WebSocketClient {
                                 close();
                             }
 
-                            if (cfg.fftCompression() != null) try {
+                            if (cfg.fftCompression() != null && !fftCompressionForced) try {
                                 fftCompression = FFTCompression.valueOf(cfg.fftCompression().toUpperCase());
                             } catch (IllegalArgumentException e) {
                                 IOException ex = new IOException(

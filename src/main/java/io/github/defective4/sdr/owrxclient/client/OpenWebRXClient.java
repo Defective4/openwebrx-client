@@ -13,6 +13,7 @@ import io.github.defective4.sdr.owrxclient.command.ConnectionPropertiesCommand;
 import io.github.defective4.sdr.owrxclient.command.SelectProfileCommand;
 import io.github.defective4.sdr.owrxclient.command.SetFrequencyCommand;
 import io.github.defective4.sdr.owrxclient.compression.AudioCompression;
+import io.github.defective4.sdr.owrxclient.compression.FFTCompression;
 import io.github.defective4.sdr.owrxclient.event.OWRXListener;
 import io.github.defective4.sdr.owrxclient.model.ChatMessage;
 import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
@@ -44,6 +45,10 @@ public class OpenWebRXClient {
 
     public void forceAudioCompression(AudioCompression audioCompression) {
         socket.forceAudioCompression(audioCompression);
+    }
+
+    public void forceFFTCompression(FFTCompression fftCompression) {
+        socket.forceFFTCompression(fftCompression);
     }
 
     public Optional<AudioCompression> getAudioCompression() {
