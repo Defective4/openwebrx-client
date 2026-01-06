@@ -1,13 +1,24 @@
 package io.github.defective4.sdr.owrxclient.model;
 
-import java.awt.Color;
-
 import com.google.gson.annotations.SerializedName;
 
-public record ChatMessage(@SerializedName("name") String username, @SerializedName("text") String message,
-        String color) {
+public class ChatMessage {
+    @SerializedName("text")
+    private final String message;
+    @SerializedName("name")
+    private final String username;
 
-    public Color parsedColor() {
-        return Color.decode(color);
+    public ChatMessage(String username, String message) {
+        this.username = username;
+        this.message = message;
     }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
 }

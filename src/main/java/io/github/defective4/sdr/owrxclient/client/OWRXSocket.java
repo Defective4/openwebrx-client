@@ -23,11 +23,11 @@ import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
 import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
 import io.github.defective4.sdr.owrxclient.model.Band;
 import io.github.defective4.sdr.owrxclient.model.Bookmark;
-import io.github.defective4.sdr.owrxclient.model.ChatMessage;
 import io.github.defective4.sdr.owrxclient.model.DialFrequency;
 import io.github.defective4.sdr.owrxclient.model.Feature;
 import io.github.defective4.sdr.owrxclient.model.ReceiverMode;
 import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
+import io.github.defective4.sdr.owrxclient.model.ServerChatMessage;
 import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
 import io.github.defective4.sdr.owrxclient.model.metadata.Metadata.Type;
 import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
@@ -156,7 +156,7 @@ public class OWRXSocket extends WebSocketClient {
                                 default -> {}
                             }
                         }
-                        case CHAT_MESSAGE -> ls.chatMessageReceived((ChatMessage) serverMessage);
+                        case CHAT_MESSAGE -> ls.chatMessageReceived((ServerChatMessage) serverMessage);
                         default -> {}
                     }
                 });

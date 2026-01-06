@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.github.defective4.sdr.owrxclient.event.OWRXListener;
+import io.github.defective4.sdr.owrxclient.message.client.ClientChatCommand;
 import io.github.defective4.sdr.owrxclient.message.client.ClientCommand;
 import io.github.defective4.sdr.owrxclient.message.client.ConnectionPropertiesCommand;
+import io.github.defective4.sdr.owrxclient.model.ChatMessage;
 import io.github.defective4.sdr.owrxclient.model.param.ConnectionParams;
 
 public class OpenWebRXClient {
@@ -32,12 +34,21 @@ public class OpenWebRXClient {
         socket.sendCommand(new ConnectionPropertiesCommand(new ConnectionParams(12000, 48000)));
     }
 
+
     public List<OWRXListener> getListeners() {
         return Collections.unmodifiableList(listeners);
     }
 
     public boolean removeListener(OWRXListener listener) {
         return listeners.remove(listener);
+    }
+
+    public void sendChatMessage(ChatMessage message) {
+        socket.sendCommand(new ClientChatCommand(message));
+    }
+
+    public void sendChatMessage(String username, String message) {
+        sendChatMessage(new ChatMessage(username, message));
     }
 
     public void sendCommand(ClientCommand command) {

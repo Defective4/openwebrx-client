@@ -31,7 +31,6 @@ public class Main {
 
                 @Override
                 public void lowQualityAudioReceived(byte[] data) {}
-
             });
             client.connect();
         } catch (Exception e) {
