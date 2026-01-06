@@ -2,6 +2,7 @@ package io.github.defective4.sdr.owrxclient.client;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
+import io.github.defective4.sdr.owrxclient.audio.ADPCMDecoder;
 import io.github.defective4.sdr.owrxclient.message.client.ClientCommand;
 import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
 import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
@@ -34,9 +36,13 @@ import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
 
 public class OWRXSocket extends WebSocketClient {
 
+    private static final String COMPRESSION_ADPCM = "adpcm";
     private static final String HS_HEADER = "CLIENT DE SERVER";
-    private final OpenWebRXClient client;
+    private final ADPCMDecoder adpcmDecoder = new ADPCMDecoder();
 
+    private String audioCompression;
+
+    private final OpenWebRXClient client;
     private final Gson gson = new Gson();
 
     private boolean handshakeCompleted;
@@ -72,10 +78,17 @@ public class OWRXSocket extends WebSocketClient {
                 byte[] data = new byte[bytes.remaining()];
                 bytes.get(data);
                 client.getListeners().forEach(ls -> {
+                    byte[] pcm = data;
+                    if (COMPRESSION_ADPCM.equals(audioCompression)) {
+                        short[] decoded = adpcmDecoder.decodeWithSync(data);
+                        ByteBuffer buffer = ByteBuffer.allocate(decoded.length * 2).order(ByteOrder.LITTLE_ENDIAN);
+                        for (short s : decoded) buffer.putShort(s);
+                        pcm = buffer.array();
+                    }
                     if (hi)
-                        ls.highQualityAudioReceived(data);
+                        ls.highQualityAudioReceived(pcm);
                     else
-                        ls.lowQualityAudioReceived(data);
+                        ls.lowQualityAudioReceived(pcm);
                 });
             }
             default -> {}
@@ -120,7 +133,11 @@ public class OWRXSocket extends WebSocketClient {
                         type.getModelClass());
                 client.getListeners().forEach(ls -> {
                     switch (type) {
-                        case CONFIG -> ls.serverConfigChanged((ServerConfig) serverMessage);
+                        case CONFIG -> {
+                            ServerConfig cfg = (ServerConfig) serverMessage;
+                            if (cfg.audioCompression() != null) audioCompression = cfg.audioCompression();
+                            ls.serverConfigChanged(cfg);
+                        }
                         case RECEIVER_DETAILS -> ls.receiverDetailsReceived((ReceiverDetails) serverMessage);
                         case DIAL_FREQUENCIES -> ls.dialFrequenciesUpdated((DialFrequency[]) serverMessage);
                         case BOOKMARKS -> ls.bookmarksUpdated((Bookmark[]) serverMessage);
