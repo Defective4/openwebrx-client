@@ -45,7 +45,6 @@ public class Main {
                 @Override
                 public void lowQualityAudioReceived(byte[] data) {
                     sdl.write(data, 0, data.length);
-
                 }
 
                 @Override
@@ -53,7 +52,7 @@ public class Main {
                     ReceiverProfile profile = Arrays.stream(profiles).filter(prof -> prof.name().equals("RTL-SDR 80m"))
                             .findAny().orElse(null);
                     client.switchProfile(profile);
-                    client.setDSP(new DSPParams(3573000 - 3500000, Modulation.usb, Modulation.cwdecoder));
+                    client.setDSP(new DSPParams(3575000 - 3500000, Modulation.usb, Modulation.ft4));
                 }
 
             });
