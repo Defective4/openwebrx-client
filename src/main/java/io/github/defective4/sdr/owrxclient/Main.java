@@ -18,13 +18,14 @@ public class Main {
 
             OpenWebRXClient client = new OpenWebRXClient(URI.create("wss://radio.raspberry.local/ws/"));
             client.addListener(new OWRXAdapter() {
+
                 @Override
                 public void chatMessageReceived(ServerChatMessage message) {
+
                 }
 
                 @Override
                 public void handshakeReceived(String server, String version) {
-                    System.out.println(server + ": " + version);
                     client.sendCommand(new DSPControlCommand(new DSPParams((int) -900e3, Modulation.wfm, null)));
                     client.startDSP();
                 }

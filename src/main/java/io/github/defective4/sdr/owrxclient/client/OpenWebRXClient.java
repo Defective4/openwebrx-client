@@ -3,16 +3,20 @@ package io.github.defective4.sdr.owrxclient.client;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.github.defective4.sdr.owrxclient.event.OWRXListener;
 import io.github.defective4.sdr.owrxclient.message.client.ClientChatCommand;
 import io.github.defective4.sdr.owrxclient.message.client.ClientCommand;
 import io.github.defective4.sdr.owrxclient.message.client.ConnectionPropertiesCommand;
+import io.github.defective4.sdr.owrxclient.message.client.SelectProfileCommand;
 import io.github.defective4.sdr.owrxclient.message.client.SetFrequencyCommand;
 import io.github.defective4.sdr.owrxclient.model.ChatMessage;
+import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
 import io.github.defective4.sdr.owrxclient.model.param.ConnectionParams;
 import io.github.defective4.sdr.owrxclient.model.param.FrequencyParams;
+import io.github.defective4.sdr.owrxclient.model.param.ProfileParams;
 
 public class OpenWebRXClient {
     private final List<OWRXListener> listeners = new CopyOnWriteArrayList<>();
@@ -66,6 +70,22 @@ public class OpenWebRXClient {
 
     public void startDSP() {
         socket.startDSP();
+    }
+
+    public void switchProfile(ReceiverProfile profile) {
+        socket.sendCommand(new SelectProfileCommand(new ProfileParams(profile)));
+    }
+
+    public void switchProfile(ReceiverProfile profile, String key) {
+        socket.sendCommand(new SelectProfileCommand(new ProfileParams(profile, key)));
+    }
+
+    public void switchProfile(UUID[] profile) {
+        socket.sendCommand(new SelectProfileCommand(new ProfileParams(profile)));
+    }
+
+    public void switchProfile(UUID[] profile, String key) {
+        socket.sendCommand(new SelectProfileCommand(new ProfileParams(profile, key)));
     }
 
 }
