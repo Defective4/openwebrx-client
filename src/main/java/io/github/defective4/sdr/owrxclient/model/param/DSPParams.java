@@ -11,8 +11,9 @@ public record DSPParams(@SerializedName("high_cut") Integer highCut, @Serialized
         @SerializedName("secondary_offset_freq") Integer secondaryOffsetFrequency) {
 
     public DSPParams(Integer offsetFrequency, Modulation modulation, Modulation secondaryModulation) {
-        this(modulation.getLowPass(), modulation.getHighPass(), offsetFrequency, modulation, 3, 0, secondaryModulation,
-                1000);
+        this(secondaryModulation == null ? modulation.getLowPass() : secondaryModulation.getLowPass(),
+                secondaryModulation == null ? modulation.getHighPass() : secondaryModulation.getHighPass(),
+                offsetFrequency, modulation, 3, 0, secondaryModulation, 1000);
     }
 
 }

@@ -18,11 +18,13 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 import io.github.defective4.sdr.owrxclient.command.ClientCommand;
+import io.github.defective4.sdr.owrxclient.command.DSPControlCommand;
 import io.github.defective4.sdr.owrxclient.compression.ADPCMDecoder;
 import io.github.defective4.sdr.owrxclient.compression.AudioCompression;
 import io.github.defective4.sdr.owrxclient.compression.FFTCompression;
@@ -40,6 +42,7 @@ import io.github.defective4.sdr.owrxclient.model.ServerConfig;
 import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
 import io.github.defective4.sdr.owrxclient.model.metadata.Metadata.Type;
 import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
+import io.github.defective4.sdr.owrxclient.model.param.DSPParams;
 
 public class OWRXSocket extends WebSocketClient {
 
@@ -55,15 +58,16 @@ public class OWRXSocket extends WebSocketClient {
     private boolean audioCompressionForced;
     private final OpenWebRXClient client;
 
+    private Class<?> currentSecondary;
+
     private final ADPCMDecoder fftAdpcmDecoder = new ADPCMDecoder();
 
     private FFTCompression fftCompression = FFTCompression.NONE;
-
     private boolean fftCompressionForced;
+
     private int fftSize = 0;
 
     private final Gson gson = new Gson();
-
     private boolean handshakeCompleted;
     private int secondaryFFTSize = 0;
     private String serverFlavor, serverVersion;
@@ -229,6 +233,8 @@ public class OWRXSocket extends WebSocketClient {
                                 close();
                             }
                             if (cfg.fftSize() != null) fftSize = cfg.fftSize();
+                            if (cfg.startModulation() != null)
+                                currentSecondary = cfg.startModulation().getSecondaryDataClass();
                             ls.serverConfigChanged(cfg);
                         }
                         case RECEIVER_DETAILS -> ls.receiverDetailsReceived((ReceiverDetails) serverMessage);
@@ -273,11 +279,18 @@ public class OWRXSocket extends WebSocketClient {
                             if (cfg.secondaryFFTSize() != null) secondaryFFTSize = cfg.secondaryFFTSize();
                             ls.secondaryConfigChanged(cfg);
                         }
+                        case SECONDARY_DEMOD -> {
+                            JsonElement json = (JsonElement) serverMessage;
+                            if (currentSecondary != null) try {
+                                ls.demodulatorResultReceived(gson.fromJson(json, currentSecondary));
+                            } catch (JsonParseException e) {}
+                        }
                         default -> {}
                     }
                 });
             } catch (IllegalArgumentException e) {}
         } catch (NullPointerException | JsonParseException e) {
+            e.printStackTrace();
             System.err.println("Invalid JSON message received from server");
         }
     }
@@ -287,6 +300,17 @@ public class OWRXSocket extends WebSocketClient {
 
     public void sendCommand(ClientCommand command) {
         send(gson.toJson(command));
+    }
+
+    public void setDSP(DSPParams dspParams) {
+        sendCommand(new DSPControlCommand(dspParams));
+        if (dspParams.modulation() != null) {
+            if (dspParams.secondaryModulation() != null
+                    && dspParams.secondaryModulation().getSecondaryDataClass() != null)
+                currentSecondary = dspParams.secondaryModulation().getSecondaryDataClass();
+            else
+                currentSecondary = null;
+        }
     }
 
     public void startDSP() {

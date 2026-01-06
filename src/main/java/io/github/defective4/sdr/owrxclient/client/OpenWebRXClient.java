@@ -18,6 +18,7 @@ import io.github.defective4.sdr.owrxclient.event.OWRXListener;
 import io.github.defective4.sdr.owrxclient.model.ChatMessage;
 import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
 import io.github.defective4.sdr.owrxclient.model.param.ConnectionParams;
+import io.github.defective4.sdr.owrxclient.model.param.DSPParams;
 import io.github.defective4.sdr.owrxclient.model.param.FrequencyParams;
 import io.github.defective4.sdr.owrxclient.model.param.ProfileParams;
 
@@ -81,6 +82,10 @@ public class OpenWebRXClient {
 
     public void setCenterFrequency(int frequency, String key) {
         socket.sendCommand(new SetFrequencyCommand(new FrequencyParams(frequency, key)));
+    }
+
+    public void setDSP(DSPParams dspParams) {
+        socket.setDSP(dspParams);
     }
 
     public void startDSP() {

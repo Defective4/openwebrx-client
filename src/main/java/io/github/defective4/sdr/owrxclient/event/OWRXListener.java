@@ -29,6 +29,8 @@ public interface OWRXListener {
 
     void cpuUsageUpdated(float cpuUsage);
 
+    void demodulatorResultReceived(Object result);
+
     void dialFrequenciesUpdated(DialFrequency[] frequencies);
 
     void featuresUpdated(List<Feature> features);

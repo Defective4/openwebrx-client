@@ -36,6 +36,9 @@ public abstract class OWRXAdapter implements OWRXListener {
     public void cpuUsageUpdated(float cpuUsage) {}
 
     @Override
+    public void demodulatorResultReceived(Object result) {}
+
+    @Override
     public void dialFrequenciesUpdated(DialFrequency[] frequencies) {}
 
     @Override

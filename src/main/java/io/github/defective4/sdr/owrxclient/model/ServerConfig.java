@@ -14,5 +14,11 @@ public record ServerConfig(@SerializedName("audio_compression") String audioComp
         @SerializedName("waterfall_scheme") String waterfall,
         @SerializedName("waterfall_auto_levels") WaterfallLevels waterfallAutoLevels,
         @SerializedName("waterfall_auto_min_range") Integer waterfallAutoMinRange,
-        @SerializedName("waterfall_colors") Integer[] waterfallColors) {
+        @SerializedName("waterfall_colors") Integer[] waterfallColors,
+        @SerializedName("center_freq") Integer centerFrequency,
+        @SerializedName("start_offset_freq") Integer startOffsetFrequency,
+        @SerializedName("profile_id") String profileId, @SerializedName("start_freq") Integer startFrequency,
+        @SerializedName("start_mod") Modulation startModulation, @SerializedName("sdr_id") String sdrId
+
+) {
 }
