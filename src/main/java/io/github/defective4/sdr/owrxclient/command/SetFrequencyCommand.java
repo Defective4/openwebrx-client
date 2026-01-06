@@ -1,4 +1,4 @@
-package io.github.defective4.sdr.owrxclient.message.client;
+package io.github.defective4.sdr.owrxclient.command;
 
 import io.github.defective4.sdr.owrxclient.model.param.FrequencyParams;
 

@@ -5,9 +5,6 @@ import java.util.Objects;
 
 import com.google.gson.JsonObject;
 
-import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
-import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
-
 public enum ServerMessageType {
     BANDS(Band[].class), BATTERY(BatteryInfo.class), BOOKMARKS(Bookmark[].class), CHAT_MESSAGE(ServerChatMessage.class),
     CLIENTS(Integer.class), CONFIG(ServerConfig.class), CPUUSAGE(Float.class), DIAL_FREQUENCIES(DialFrequency[].class),

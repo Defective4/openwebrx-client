@@ -1,8 +1,6 @@
-package io.github.defective4.sdr.owrxclient.message.server;
+package io.github.defective4.sdr.owrxclient.model;
 
 import com.google.gson.annotations.SerializedName;
-
-import io.github.defective4.sdr.owrxclient.model.ReceiverGPS;
 
 public record ReceiverDetails(String locator, @SerializedName("photo_desc") String photoDescription,
         @SerializedName("photo_title") String photoTitle, @SerializedName("receiver_asl") int receiverElevation,

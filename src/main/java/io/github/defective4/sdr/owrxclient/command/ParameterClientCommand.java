@@ -1,4 +1,4 @@
-package io.github.defective4.sdr.owrxclient.message.client;
+package io.github.defective4.sdr.owrxclient.command;
 
 public class ParameterClientCommand extends ClientCommand {
     private final Object params;

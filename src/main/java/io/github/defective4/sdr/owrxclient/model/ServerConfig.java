@@ -1,9 +1,6 @@
-package io.github.defective4.sdr.owrxclient.message.server;
+package io.github.defective4.sdr.owrxclient.model;
 
 import com.google.gson.annotations.SerializedName;
-
-import io.github.defective4.sdr.owrxclient.model.ReceiverGPS;
-import io.github.defective4.sdr.owrxclient.model.WaterfallLevels;
 
 public record ServerConfig(@SerializedName("audio_compression") String audioCompression,
         @SerializedName("allow_audio_recording") boolean audioRecordingEnabled,
