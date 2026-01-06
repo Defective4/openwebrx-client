@@ -22,9 +22,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
-import io.github.defective4.sdr.owrxclient.audio.ADPCMDecoder;
-import io.github.defective4.sdr.owrxclient.audio.AudioCompression;
 import io.github.defective4.sdr.owrxclient.command.ClientCommand;
+import io.github.defective4.sdr.owrxclient.compression.ADPCMDecoder;
+import io.github.defective4.sdr.owrxclient.compression.AudioCompression;
+import io.github.defective4.sdr.owrxclient.compression.FFTCompression;
 import io.github.defective4.sdr.owrxclient.model.Band;
 import io.github.defective4.sdr.owrxclient.model.BatteryInfo;
 import io.github.defective4.sdr.owrxclient.model.Bookmark;
@@ -41,17 +42,23 @@ import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
 
 public class OWRXSocket extends WebSocketClient {
 
+    private static final byte COMPRESS_FFT_PAD_N = 10;
     private static final String HS_HEADER = "CLIENT DE SERVER";
+
     long avg = 0;
 
     long sec = 0;
-
-    private final ADPCMDecoder adpcmDecoder = new ADPCMDecoder();
-    private AudioCompression audioCompression;
+    private final ADPCMDecoder audioAdpcmDecoder = new ADPCMDecoder();
+    private AudioCompression audioCompression = AudioCompression.NONE;
 
     private boolean audioCompressionForced;
     private final OpenWebRXClient client;
 
+    private final ADPCMDecoder fftAdpcmDecoder = new ADPCMDecoder();
+
+    private FFTCompression fftCompression = FFTCompression.NONE;
+
+    private int fftSize = 0;
     private final Gson gson = new Gson();
 
     private boolean handshakeCompleted;
@@ -64,12 +71,20 @@ public class OWRXSocket extends WebSocketClient {
     }
 
     public void forceAudioCompression(AudioCompression audioCompression) {
-        this.audioCompression = audioCompression;
+        this.audioCompression = Objects.requireNonNull(audioCompression);
         audioCompressionForced = true;
     }
 
     public Optional<AudioCompression> getAudioCompression() {
         return Optional.ofNullable(audioCompression);
+    }
+
+    public Optional<FFTCompression> getFftCompression() {
+        return Optional.ofNullable(fftCompression);
+    }
+
+    public float getFftSize() {
+        return fftSize;
     }
 
     public String getServerFlavor() {
@@ -79,7 +94,6 @@ public class OWRXSocket extends WebSocketClient {
     public String getServerVersion() {
         return serverVersion;
     }
-
     @Override
     public void onClose(int code, String reason, boolean remote) {}
 
@@ -93,12 +107,28 @@ public class OWRXSocket extends WebSocketClient {
         byte type = bytes.get();
         switch (type) {
             case 0x01 -> {
-                bytes.order(ByteOrder.LITTLE_ENDIAN);
-                float[] fft = new float[bytes.remaining() / 4];
-                for (int i = 0; i < fft.length; i++) {
-                    fft[i] = bytes.getFloat();
+                float[] fft;
+                if (fftCompression == FFTCompression.ADPCM) {
+                    fftAdpcmDecoder.reset();
+                    byte[] data = new byte[bytes.remaining()];
+                    bytes.get(data);
+                    short[] waterfallShort = fftAdpcmDecoder.decode(data);
+                    fft = new float[waterfallShort.length - COMPRESS_FFT_PAD_N];
+                    for (int i = 0; i < waterfallShort.length - COMPRESS_FFT_PAD_N; i++)
+                        fft[i] = waterfallShort[i] / 100;
+                } else {
+                    bytes.order(ByteOrder.LITTLE_ENDIAN);
+                    fft = new float[bytes.remaining() / 4];
+                    for (int i = 0; i < fft.length; i++) {
+                        fft[i] = bytes.getFloat();
+                    }
                 }
-                client.getListeners().forEach(ls -> ls.fftUpdated(fft));
+                float[] correctedFFT;
+                if (fft.length != fftSize) {
+                    correctedFFT = Arrays.copyOf(fft, fftSize);
+                } else
+                    correctedFFT = fft;
+                client.getListeners().forEach(ls -> ls.fftUpdated(correctedFFT));
             }
             case 0x02, 0x04 -> {
                 boolean hi = type == 0x04;
@@ -107,7 +137,7 @@ public class OWRXSocket extends WebSocketClient {
                 client.getListeners().forEach(ls -> {
                     byte[] pcm = data;
                     if (audioCompression == AudioCompression.ADPCM) {
-                        short[] decoded = adpcmDecoder.decodeWithSync(data);
+                        short[] decoded = audioAdpcmDecoder.decodeWithSync(data);
                         ByteBuffer buffer = ByteBuffer.allocate(decoded.length * 2).order(ByteOrder.LITTLE_ENDIAN);
                         for (short s : decoded) buffer.putShort(s);
                         pcm = buffer.array();
@@ -155,7 +185,6 @@ public class OWRXSocket extends WebSocketClient {
             return;
         }
         try {
-            System.err.println(message); // TODO remove
             JsonObject root = JsonParser.parseString(message).getAsJsonObject();
             try {
                 ServerMessageType type = ServerMessageType.valueOf(root.get("type").getAsString().toUpperCase());
@@ -169,10 +198,20 @@ public class OWRXSocket extends WebSocketClient {
                                 audioCompression = AudioCompression.valueOf(cfg.audioCompression().toUpperCase());
                             } catch (IllegalArgumentException e) {
                                 IOException ex = new IOException(
-                                        "Server requested an unknown compression: " + cfg.audioCompression());
+                                        "Server requested an unknown audio compression: " + cfg.audioCompression());
                                 client.getListeners().forEach(l -> ls.clientErrored(ex));
                                 close();
                             }
+
+                            if (cfg.fftCompression() != null) try {
+                                fftCompression = FFTCompression.valueOf(cfg.fftCompression().toUpperCase());
+                            } catch (IllegalArgumentException e) {
+                                IOException ex = new IOException(
+                                        "Server requested an unknown FFT compression: " + cfg.fftCompression());
+                                client.getListeners().forEach(l -> ls.clientErrored(ex));
+                                close();
+                            }
+                            if (cfg.fftSize() != null) fftSize = cfg.fftSize();
                             ls.serverConfigChanged(cfg);
                         }
                         case RECEIVER_DETAILS -> ls.receiverDetailsReceived((ReceiverDetails) serverMessage);

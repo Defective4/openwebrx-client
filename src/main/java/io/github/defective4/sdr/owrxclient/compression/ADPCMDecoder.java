@@ -1,4 +1,4 @@
-package io.github.defective4.sdr.owrxclient.audio;
+package io.github.defective4.sdr.owrxclient.compression;
 
 import java.util.Arrays;
 
@@ -21,6 +21,15 @@ public class ADPCMDecoder {
     private short syncCounter;
 
     private byte synced;
+
+    public short[] decode(byte[] data) {
+        short[] output = new short[data.length * 2];
+        for (int i = 0; i < data.length; i++) {
+            output[i * 2] = decodeNibble(data[i] & 0x0F);
+            output[i * 2 + 1] = decodeNibble((data[i] & 0xff) >> 4 & 0x0F);
+        }
+        return output;
+    }
 
     public short[] decodeWithSync(byte[] data) {
         short[] output = new short[data.length * 2];
@@ -58,6 +67,17 @@ public class ADPCMDecoder {
             }
         }
         return Arrays.copyOf(output, oi);
+    }
+
+    public void reset() {
+        stepIndex = 0;
+        predictor = 0;
+        step = 0;
+        synced = 0;
+        syncCounter = 0;
+        phase = 0;
+        Arrays.fill(syncBuffer, (byte) 0);
+        syncBufferIndex = 0;
     }
 
     private short decodeNibble(int nibble) {

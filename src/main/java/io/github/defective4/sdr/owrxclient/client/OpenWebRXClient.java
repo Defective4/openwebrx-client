@@ -7,12 +7,12 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import io.github.defective4.sdr.owrxclient.audio.AudioCompression;
 import io.github.defective4.sdr.owrxclient.command.ClientChatCommand;
 import io.github.defective4.sdr.owrxclient.command.ClientCommand;
 import io.github.defective4.sdr.owrxclient.command.ConnectionPropertiesCommand;
 import io.github.defective4.sdr.owrxclient.command.SelectProfileCommand;
 import io.github.defective4.sdr.owrxclient.command.SetFrequencyCommand;
+import io.github.defective4.sdr.owrxclient.compression.AudioCompression;
 import io.github.defective4.sdr.owrxclient.event.OWRXListener;
 import io.github.defective4.sdr.owrxclient.model.ChatMessage;
 import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
