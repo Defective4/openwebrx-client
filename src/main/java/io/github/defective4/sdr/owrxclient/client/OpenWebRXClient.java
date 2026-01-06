@@ -3,9 +3,11 @@ package io.github.defective4.sdr.owrxclient.client;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import io.github.defective4.sdr.owrxclient.audio.AudioCompression;
 import io.github.defective4.sdr.owrxclient.event.OWRXListener;
 import io.github.defective4.sdr.owrxclient.message.client.ClientChatCommand;
 import io.github.defective4.sdr.owrxclient.message.client.ClientCommand;
@@ -38,6 +40,14 @@ public class OpenWebRXClient {
         socket.connectBlocking();
         socket.send("SERVER DE CLIENT type=receiver");
         socket.sendCommand(new ConnectionPropertiesCommand(new ConnectionParams(12000, 48000)));
+    }
+
+    public void forceAudioCompression(AudioCompression audioCompression) {
+        socket.forceAudioCompression(audioCompression);
+    }
+
+    public Optional<AudioCompression> getAudioCompression() {
+        return socket.getAudioCompression();
     }
 
     public List<OWRXListener> getListeners() {

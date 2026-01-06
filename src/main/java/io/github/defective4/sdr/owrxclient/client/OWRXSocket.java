@@ -1,15 +1,18 @@
 package io.github.defective4.sdr.owrxclient.client;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -20,6 +23,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 import io.github.defective4.sdr.owrxclient.audio.ADPCMDecoder;
+import io.github.defective4.sdr.owrxclient.audio.AudioCompression;
 import io.github.defective4.sdr.owrxclient.message.client.ClientCommand;
 import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
 import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
@@ -36,16 +40,17 @@ import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
 
 public class OWRXSocket extends WebSocketClient {
 
-    private static final String COMPRESSION_ADPCM = "adpcm";
     private static final String HS_HEADER = "CLIENT DE SERVER";
     long avg = 0;
 
     long sec = 0;
 
     private final ADPCMDecoder adpcmDecoder = new ADPCMDecoder();
-    private String audioCompression;
+    private AudioCompression audioCompression;
 
+    private boolean audioCompressionForced;
     private final OpenWebRXClient client;
+
     private final Gson gson = new Gson();
 
     private boolean handshakeCompleted;
@@ -55,6 +60,15 @@ public class OWRXSocket extends WebSocketClient {
     public OWRXSocket(URI serverUri, OpenWebRXClient client) {
         super(serverUri);
         this.client = client;
+    }
+
+    public void forceAudioCompression(AudioCompression audioCompression) {
+        this.audioCompression = audioCompression;
+        audioCompressionForced = true;
+    }
+
+    public Optional<AudioCompression> getAudioCompression() {
+        return Optional.ofNullable(audioCompression);
     }
 
     public String getServerFlavor() {
@@ -67,6 +81,7 @@ public class OWRXSocket extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {}
+
     @Override
     public void onError(Exception ex) {
         ex.printStackTrace();
@@ -82,11 +97,14 @@ public class OWRXSocket extends WebSocketClient {
                 bytes.get(data);
                 client.getListeners().forEach(ls -> {
                     byte[] pcm = data;
-                    if (COMPRESSION_ADPCM.equals(audioCompression)) {
+                    if (audioCompression == AudioCompression.ADPCM) {
                         short[] decoded = adpcmDecoder.decodeWithSync(data);
                         ByteBuffer buffer = ByteBuffer.allocate(decoded.length * 2).order(ByteOrder.LITTLE_ENDIAN);
                         for (short s : decoded) buffer.putShort(s);
                         pcm = buffer.array();
+                    }
+                    if (pcm.length % 2 != 0) {
+                        pcm = Arrays.copyOf(pcm, pcm.length + 1);
                     }
                     if (hi)
                         ls.highQualityAudioReceived(pcm);
@@ -138,7 +156,14 @@ public class OWRXSocket extends WebSocketClient {
                     switch (type) {
                         case CONFIG -> {
                             ServerConfig cfg = (ServerConfig) serverMessage;
-                            if (cfg.audioCompression() != null) audioCompression = cfg.audioCompression();
+                            if (cfg.audioCompression() != null && !audioCompressionForced) try {
+                                audioCompression = AudioCompression.valueOf(cfg.audioCompression().toUpperCase());
+                            } catch (IllegalArgumentException e) {
+                                IOException ex = new IOException(
+                                        "Server requested an unknown compression: " + cfg.audioCompression());
+                                client.getListeners().forEach(l -> ls.clientErrored(ex));
+                                close();
+                            }
                             ls.serverConfigChanged(cfg);
                         }
                         case RECEIVER_DETAILS -> ls.receiverDetailsReceived((ReceiverDetails) serverMessage);

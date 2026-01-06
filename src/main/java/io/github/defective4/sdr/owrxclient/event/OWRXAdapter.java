@@ -25,6 +25,9 @@ public abstract class OWRXAdapter implements OWRXListener {
     public void chatMessageReceived(ServerChatMessage message) {}
 
     @Override
+    public void clientErrored(Exception ex) {}
+
+    @Override
     public void cpuUsageUpdated(float cpuUsage) {}
 
     @Override

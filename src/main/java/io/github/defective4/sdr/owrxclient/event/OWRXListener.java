@@ -14,11 +14,14 @@ import io.github.defective4.sdr.owrxclient.model.ServerChatMessage;
 import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
 
 public interface OWRXListener {
+
     void bandsUpdated(Band[] bands);
 
     void bookmarksUpdated(Bookmark[] bookmarks);
 
     void chatMessageReceived(ServerChatMessage message);
+
+    void clientErrored(Exception ex);
 
     void cpuUsageUpdated(float cpuUsage);
 
