@@ -32,6 +32,8 @@ public interface OWRXListener {
 
     void featuresUpdated(List<Feature> features);
 
+    void fftUpdated(float[] fft);
+
     void handshakeReceived(String server, String version);
 
     void highQualityAudioReceived(byte[] data);

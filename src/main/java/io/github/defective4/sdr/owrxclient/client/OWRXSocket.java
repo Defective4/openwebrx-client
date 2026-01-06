@@ -92,6 +92,14 @@ public class OWRXSocket extends WebSocketClient {
     public void onMessage(ByteBuffer bytes) {
         byte type = bytes.get();
         switch (type) {
+            case 0x01 -> {
+                bytes.order(ByteOrder.LITTLE_ENDIAN);
+                float[] fft = new float[bytes.remaining() / 4];
+                for (int i = 0; i < fft.length; i++) {
+                    fft[i] = bytes.getFloat();
+                }
+                client.getListeners().forEach(ls -> ls.fftUpdated(fft));
+            }
             case 0x02, 0x04 -> {
                 boolean hi = type == 0x04;
                 byte[] data = new byte[bytes.remaining()];

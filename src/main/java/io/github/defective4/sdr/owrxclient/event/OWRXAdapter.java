@@ -41,6 +41,9 @@ public abstract class OWRXAdapter implements OWRXListener {
     public void featuresUpdated(List<Feature> features) {}
 
     @Override
+    public void fftUpdated(float[] fft) {}
+
+    @Override
     public void handshakeReceived(String server, String version) {}
 
     @Override
