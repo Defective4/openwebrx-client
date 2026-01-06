@@ -19,6 +19,9 @@ public abstract class OWRXAdapter implements OWRXListener {
     public void bookmarksUpdated(Bookmark[] bookmarks) {}
 
     @Override
+    public void cpuUsageUpdated(float cpuUsage) {}
+
+    @Override
     public void dialFrequenciesUpdated(DialFrequency[] frequencies) {}
 
     @Override
@@ -44,5 +47,11 @@ public abstract class OWRXAdapter implements OWRXListener {
 
     @Override
     public void serverConfigChanged(ServerConfig config) {}
+
+    @Override
+    public void signalMeterUpdated(float signalLevel) {}
+
+    @Override
+    public void temperatureUpdated(int temperatureC) {}
 
 }

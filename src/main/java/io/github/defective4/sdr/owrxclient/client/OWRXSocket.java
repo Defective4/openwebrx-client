@@ -133,6 +133,9 @@ public class OWRXSocket extends WebSocketClient {
                             ls.featuresUpdated(Collections.unmodifiableList(features));
                         }
                         case MODES -> ls.receiverModesUpdated((ReceiverMode[]) serverMessage);
+                        case CPUUSAGE -> ls.cpuUsageUpdated((float) serverMessage);
+                        case SMETER -> ls.signalMeterUpdated((float) serverMessage);
+                        case TEMPERATURE -> ls.temperatureUpdated((int) serverMessage);
                         default -> {}
                     }
                 });

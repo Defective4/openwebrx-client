@@ -15,6 +15,8 @@ public interface OWRXListener {
 
     void bookmarksUpdated(Bookmark[] bookmarks);
 
+    void cpuUsageUpdated(float cpuUsage);
+
     void dialFrequenciesUpdated(DialFrequency[] frequencies);
 
     void featuresUpdated(List<Feature> features);
@@ -32,4 +34,8 @@ public interface OWRXListener {
     void receiverModesUpdated(ReceiverMode[] modes);
 
     void serverConfigChanged(ServerConfig config);
+
+    void signalMeterUpdated(float signalLevel);
+
+    void temperatureUpdated(int temperatureC);
 }
