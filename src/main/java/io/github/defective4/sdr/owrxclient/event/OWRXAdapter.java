@@ -9,6 +9,12 @@ import io.github.defective4.sdr.owrxclient.model.DialFrequency;
 public abstract class OWRXAdapter implements OWRXListener {
 
     @Override
+    public void bandsUpdated(Band[] bands) {}
+
+    @Override
+    public void bookmarksUpdated(Bookmark[] bookmarks) {}
+
+    @Override
     public void dialFrequenciesUpdated(DialFrequency[] frequencies) {}
 
     @Override
@@ -21,15 +27,12 @@ public abstract class OWRXAdapter implements OWRXListener {
     public void lowQualityAudioReceived(byte[] data) {}
 
     @Override
+    public void numberOfClientsUpdated(int clients) {}
+
+    @Override
     public void receiverDetailsReceived(ReceiverDetails details) {}
 
     @Override
     public void serverConfigChanged(ServerConfig config) {}
-
-    @Override
-    public void bookmarksUpdated(Bookmark[] bookmarks) {}
-
-    @Override
-    public void bandsUpdated(Band[] bands) {}
 
 }

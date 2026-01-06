@@ -114,6 +114,7 @@ public class OWRXSocket extends WebSocketClient {
                         case DIAL_FREQUENCIES -> ls.dialFrequenciesUpdated((DialFrequency[]) serverMessage);
                         case BOOKMARKS -> ls.bookmarksUpdated((Bookmark[]) serverMessage);
                         case BANDS -> ls.bandsUpdated((Band[]) serverMessage);
+                        case CLIENTS -> ls.numberOfClientsUpdated((int) serverMessage);
                         default -> {}
                     }
                 });

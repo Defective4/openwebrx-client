@@ -7,6 +7,10 @@ import io.github.defective4.sdr.owrxclient.model.Bookmark;
 import io.github.defective4.sdr.owrxclient.model.DialFrequency;
 
 public interface OWRXListener {
+    void bandsUpdated(Band[] bands);
+
+    void bookmarksUpdated(Bookmark[] bookmarks);
+
     void dialFrequenciesUpdated(DialFrequency[] frequencies);
 
     void handshakeReceived(String server, String version);
@@ -15,11 +19,9 @@ public interface OWRXListener {
 
     void lowQualityAudioReceived(byte[] data);
 
+    void numberOfClientsUpdated(int clients);
+
     void receiverDetailsReceived(ReceiverDetails details);
 
     void serverConfigChanged(ServerConfig config);
-
-    void bookmarksUpdated(Bookmark[] bookmarks);
-
-    void bandsUpdated(Band[] bands);
 }
