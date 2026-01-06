@@ -1,5 +1,6 @@
 package io.github.defective4.sdr.owrxclient.model;
 
+import java.util.Map;
 import java.util.Objects;
 
 import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
@@ -8,6 +9,7 @@ import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
 public enum ServerMessageType {
     BANDS(Band[].class), BOOKMARKS(Bookmark[].class), CLIENTS(Integer.class),
     CONFIG(ServerConfig.class), DIAL_FREQUENCIES(DialFrequency[].class),
+    FEATURES(Map.class),
     RECEIVER_DETAILS(ReceiverDetails.class);
 
     private final Class<?> modelClass;

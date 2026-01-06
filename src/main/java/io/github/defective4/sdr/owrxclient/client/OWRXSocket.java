@@ -2,8 +2,12 @@ package io.github.defective4.sdr.owrxclient.client;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 import org.java_websocket.client.WebSocketClient;
@@ -20,6 +24,7 @@ import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
 import io.github.defective4.sdr.owrxclient.model.Band;
 import io.github.defective4.sdr.owrxclient.model.Bookmark;
 import io.github.defective4.sdr.owrxclient.model.DialFrequency;
+import io.github.defective4.sdr.owrxclient.model.Feature;
 import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
 
 public class OWRXSocket extends WebSocketClient {
@@ -115,6 +120,17 @@ public class OWRXSocket extends WebSocketClient {
                         case BOOKMARKS -> ls.bookmarksUpdated((Bookmark[]) serverMessage);
                         case BANDS -> ls.bandsUpdated((Band[]) serverMessage);
                         case CLIENTS -> ls.numberOfClientsUpdated((int) serverMessage);
+                        case FEATURES -> {
+                            Map<String, Boolean> featureMap = (Map<String, Boolean>) serverMessage;
+                            List<Feature> features = new ArrayList<>();
+                            for (Entry<String, Boolean> entry : featureMap.entrySet()) {
+                                if (!entry.getValue()) continue;
+                                try {
+                                    features.add(Feature.valueOf(entry.getKey().toUpperCase().replace("-", "_")));
+                                } catch (IllegalArgumentException e) {}
+                            }
+                            ls.featuresUpdated(Collections.unmodifiableList(features));
+                        }
                         default -> {}
                     }
                 });
