@@ -26,6 +26,7 @@ import io.github.defective4.sdr.owrxclient.model.Bookmark;
 import io.github.defective4.sdr.owrxclient.model.DialFrequency;
 import io.github.defective4.sdr.owrxclient.model.Feature;
 import io.github.defective4.sdr.owrxclient.model.ReceiverMode;
+import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
 import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
 
 public class OWRXSocket extends WebSocketClient {
@@ -136,6 +137,7 @@ public class OWRXSocket extends WebSocketClient {
                         case CPUUSAGE -> ls.cpuUsageUpdated((float) serverMessage);
                         case SMETER -> ls.signalMeterUpdated((float) serverMessage);
                         case TEMPERATURE -> ls.temperatureUpdated((int) serverMessage);
+                        case PROFILES -> ls.receiverProfilesUpdated((ReceiverProfile[]) serverMessage);
                         default -> {}
                     }
                 });
