@@ -28,6 +28,8 @@ import io.github.defective4.sdr.owrxclient.model.Feature;
 import io.github.defective4.sdr.owrxclient.model.ReceiverMode;
 import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
 import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
+import io.github.defective4.sdr.owrxclient.model.metadata.Metadata.Type;
+import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
 
 public class OWRXSocket extends WebSocketClient {
 
@@ -138,6 +140,20 @@ public class OWRXSocket extends WebSocketClient {
                         case SMETER -> ls.signalMeterUpdated((float) serverMessage);
                         case TEMPERATURE -> ls.temperatureUpdated((int) serverMessage);
                         case PROFILES -> ls.receiverProfilesUpdated((ReceiverProfile[]) serverMessage);
+                        case METADATA -> {
+                            JsonObject obj = (JsonObject) serverMessage;
+                            Type metaType;
+                            try {
+                                metaType = Type.valueOf(obj.get("mode").getAsString().toUpperCase());
+                            } catch (IllegalArgumentException e) {
+                                metaType = null;
+                            }
+
+                            if (metaType != null) switch (metaType) {
+                                case WFM -> ls.rdsReceived(gson.fromJson(obj, RDSMetadata.class));
+                                default -> {}
+                            }
+                        }
                         default -> {}
                     }
                 });

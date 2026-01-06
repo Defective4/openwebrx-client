@@ -10,6 +10,7 @@ import io.github.defective4.sdr.owrxclient.model.DialFrequency;
 import io.github.defective4.sdr.owrxclient.model.Feature;
 import io.github.defective4.sdr.owrxclient.model.ReceiverMode;
 import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
+import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
 
 public abstract class OWRXAdapter implements OWRXListener {
 
@@ -39,6 +40,9 @@ public abstract class OWRXAdapter implements OWRXListener {
 
     @Override
     public void numberOfClientsUpdated(int clients) {}
+
+    @Override
+    public void rdsReceived(RDSMetadata rds) {}
 
     @Override
     public void receiverDetailsReceived(ReceiverDetails details) {}
