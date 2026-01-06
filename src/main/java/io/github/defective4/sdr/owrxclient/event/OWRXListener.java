@@ -10,6 +10,7 @@ import io.github.defective4.sdr.owrxclient.model.Feature;
 import io.github.defective4.sdr.owrxclient.model.ReceiverDetails;
 import io.github.defective4.sdr.owrxclient.model.ReceiverMode;
 import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
+import io.github.defective4.sdr.owrxclient.model.SecondaryConfig;
 import io.github.defective4.sdr.owrxclient.model.ServerChatMessage;
 import io.github.defective4.sdr.owrxclient.model.ServerConfig;
 import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
@@ -49,6 +50,10 @@ public interface OWRXListener {
     void receiverModesUpdated(ReceiverMode[] modes);
 
     void receiverProfilesUpdated(ReceiverProfile[] profiles);
+
+    void secondaryConfigChanged(SecondaryConfig config);
+
+    void secondaryFFTUpdated(float[] fft);
 
     void serverConfigChanged(ServerConfig config);
 

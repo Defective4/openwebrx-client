@@ -34,6 +34,7 @@ import io.github.defective4.sdr.owrxclient.model.Feature;
 import io.github.defective4.sdr.owrxclient.model.ReceiverDetails;
 import io.github.defective4.sdr.owrxclient.model.ReceiverMode;
 import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
+import io.github.defective4.sdr.owrxclient.model.SecondaryConfig;
 import io.github.defective4.sdr.owrxclient.model.ServerChatMessage;
 import io.github.defective4.sdr.owrxclient.model.ServerConfig;
 import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
@@ -64,6 +65,7 @@ public class OWRXSocket extends WebSocketClient {
     private final Gson gson = new Gson();
 
     private boolean handshakeCompleted;
+    private int secondaryFFTSize = 0;
     private String serverFlavor, serverVersion;
 
     public OWRXSocket(URI serverUri, OpenWebRXClient client) {
@@ -113,7 +115,8 @@ public class OWRXSocket extends WebSocketClient {
     public void onMessage(ByteBuffer bytes) {
         byte type = bytes.get();
         switch (type) {
-            case 0x01 -> {
+            case 0x01, 0x03 -> {
+                boolean secondary = type == 0x03;
                 float[] fft;
                 if (fftCompression == FFTCompression.ADPCM) {
                     fftAdpcmDecoder.reset();
@@ -131,11 +134,17 @@ public class OWRXSocket extends WebSocketClient {
                     }
                 }
                 float[] correctedFFT;
-                if (fft.length != fftSize) {
-                    correctedFFT = Arrays.copyOf(fft, fftSize);
+                int expected = secondary ? secondaryFFTSize : fftSize;
+                if (fft.length != expected) {
+                    correctedFFT = Arrays.copyOf(fft, expected);
                 } else
                     correctedFFT = fft;
-                client.getListeners().forEach(ls -> ls.fftUpdated(correctedFFT));
+                client.getListeners().forEach(ls -> {
+                    if (secondary)
+                        ls.secondaryFFTUpdated(correctedFFT);
+                    else
+                        ls.fftUpdated(correctedFFT);
+                });
             }
             case 0x02, 0x04 -> {
                 boolean hi = type == 0x04;
@@ -193,6 +202,7 @@ public class OWRXSocket extends WebSocketClient {
         }
         try {
             JsonObject root = JsonParser.parseString(message).getAsJsonObject();
+            System.err.println(message);
             try {
                 ServerMessageType type = ServerMessageType.valueOf(root.get("type").getAsString().toUpperCase());
                 Object serverMessage = gson.fromJson(root.has("value") ? root.get("value") : root,
@@ -258,6 +268,11 @@ public class OWRXSocket extends WebSocketClient {
                         }
                         case CHAT_MESSAGE -> ls.chatMessageReceived((ServerChatMessage) serverMessage);
                         case BATTERY -> ls.batteryStateUpdated((BatteryInfo) serverMessage);
+                        case SECONDARY_CONFIG -> {
+                            SecondaryConfig cfg = (SecondaryConfig) serverMessage;
+                            if (cfg.secondaryFFTSize() != null) secondaryFFTSize = cfg.secondaryFFTSize();
+                            ls.secondaryConfigChanged(cfg);
+                        }
                         default -> {}
                     }
                 });
