@@ -6,6 +6,7 @@ import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
 import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
 import io.github.defective4.sdr.owrxclient.model.Band;
 import io.github.defective4.sdr.owrxclient.model.Bookmark;
+import io.github.defective4.sdr.owrxclient.model.ChatMessage;
 import io.github.defective4.sdr.owrxclient.model.DialFrequency;
 import io.github.defective4.sdr.owrxclient.model.Feature;
 import io.github.defective4.sdr.owrxclient.model.ReceiverMode;
@@ -19,6 +20,9 @@ public abstract class OWRXAdapter implements OWRXListener {
 
     @Override
     public void bookmarksUpdated(Bookmark[] bookmarks) {}
+
+    @Override
+    public void chatMessageReceived(ChatMessage message) {}
 
     @Override
     public void cpuUsageUpdated(float cpuUsage) {}

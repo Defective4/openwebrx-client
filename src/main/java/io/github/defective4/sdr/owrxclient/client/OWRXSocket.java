@@ -23,6 +23,7 @@ import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
 import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
 import io.github.defective4.sdr.owrxclient.model.Band;
 import io.github.defective4.sdr.owrxclient.model.Bookmark;
+import io.github.defective4.sdr.owrxclient.model.ChatMessage;
 import io.github.defective4.sdr.owrxclient.model.DialFrequency;
 import io.github.defective4.sdr.owrxclient.model.Feature;
 import io.github.defective4.sdr.owrxclient.model.ReceiverMode;
@@ -115,7 +116,8 @@ public class OWRXSocket extends WebSocketClient {
             JsonObject root = JsonParser.parseString(message).getAsJsonObject();
             try {
                 ServerMessageType type = ServerMessageType.valueOf(root.get("type").getAsString().toUpperCase());
-                Object serverMessage = gson.fromJson(root.get("value"), type.getModelClass());
+                Object serverMessage = gson.fromJson(root.has("value") ? root.get("value") : root,
+                        type.getModelClass());
                 client.getListeners().forEach(ls -> {
                     switch (type) {
                         case CONFIG -> ls.serverConfigChanged((ServerConfig) serverMessage);
@@ -154,6 +156,7 @@ public class OWRXSocket extends WebSocketClient {
                                 default -> {}
                             }
                         }
+                        case CHAT_MESSAGE -> ls.chatMessageReceived((ChatMessage) serverMessage);
                         default -> {}
                     }
                 });

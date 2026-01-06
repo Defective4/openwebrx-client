@@ -6,6 +6,7 @@ import io.github.defective4.sdr.owrxclient.message.server.ReceiverDetails;
 import io.github.defective4.sdr.owrxclient.message.server.ServerConfig;
 import io.github.defective4.sdr.owrxclient.model.Band;
 import io.github.defective4.sdr.owrxclient.model.Bookmark;
+import io.github.defective4.sdr.owrxclient.model.ChatMessage;
 import io.github.defective4.sdr.owrxclient.model.DialFrequency;
 import io.github.defective4.sdr.owrxclient.model.Feature;
 import io.github.defective4.sdr.owrxclient.model.ReceiverMode;
@@ -16,6 +17,8 @@ public interface OWRXListener {
     void bandsUpdated(Band[] bands);
 
     void bookmarksUpdated(Bookmark[] bookmarks);
+
+    void chatMessageReceived(ChatMessage message);
 
     void cpuUsageUpdated(float cpuUsage);
 
