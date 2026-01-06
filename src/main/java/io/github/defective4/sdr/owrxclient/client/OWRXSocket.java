@@ -38,14 +38,18 @@ public class OWRXSocket extends WebSocketClient {
 
     private static final String COMPRESSION_ADPCM = "adpcm";
     private static final String HS_HEADER = "CLIENT DE SERVER";
-    private final ADPCMDecoder adpcmDecoder = new ADPCMDecoder();
+    long avg = 0;
 
+    long sec = 0;
+
+    private final ADPCMDecoder adpcmDecoder = new ADPCMDecoder();
     private String audioCompression;
 
     private final OpenWebRXClient client;
     private final Gson gson = new Gson();
 
     private boolean handshakeCompleted;
+
     private String serverFlavor, serverVersion;
 
     public OWRXSocket(URI serverUri, OpenWebRXClient client) {
@@ -63,7 +67,6 @@ public class OWRXSocket extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {}
-
     @Override
     public void onError(Exception ex) {
         ex.printStackTrace();
