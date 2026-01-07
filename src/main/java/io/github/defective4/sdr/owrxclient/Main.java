@@ -49,11 +49,11 @@ public class Main {
 
                 @Override
                 public void receiverProfilesUpdated(ReceiverProfile[] profiles) {
-                    ReceiverProfile profile = Arrays.stream(profiles).filter(prof -> prof.name().equals("RTL-SDR 20m"))
+                    ReceiverProfile profile = Arrays.stream(profiles).filter(prof -> prof.name().equals("RTL-SDR Broadcast FM 86-89 MHz"))
                             .findAny().orElse(null);
                     client.switchProfile(profile);
-                    client.setOffsetFrequency(14.08e6f - 14e6f);
-                    client.setSecondaryModulation(Modulation.ft4);
+                    client.setOffsetFrequency(-100e3f);
+                    client.setSecondaryModulation(Modulation.cwskimmer);
                 }
 
             });

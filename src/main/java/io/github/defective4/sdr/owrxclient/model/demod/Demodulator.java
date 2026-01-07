@@ -1,7 +1,7 @@
 package io.github.defective4.sdr.owrxclient.model.demod;
 
 public enum Demodulator {
-    FT8(FTMessage.class), FT4(FTMessage.class);
+    CW(CWSkimmerResult.class), FT4(FTMessage.class), FT8(FTMessage.class);
 
     private final Class<? extends DemodulatorResult> resultClass;
 

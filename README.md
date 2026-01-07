@@ -36,9 +36,9 @@ Currently, the project is in WIP state and is not really usable.
 - [x] Analog modes
 - [ ] Digital modes
   - [x] Radio Data System
-  - [ ] CW
+  - [x] CW
     - [x] CW Decoder
-    - [ ] CW Skimmer
+    - [x] CW Skimmer
   - [x] FT8
   - [x] FT4
   - [ ] ACARS
