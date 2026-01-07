@@ -43,6 +43,7 @@ import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
 import io.github.defective4.sdr.owrxclient.model.demod.Demodulator;
 import io.github.defective4.sdr.owrxclient.model.demod.DemodulatorResult;
 import io.github.defective4.sdr.owrxclient.model.demod.PlaintextResult;
+import io.github.defective4.sdr.owrxclient.model.demod.UnknownDemodulatorResult;
 import io.github.defective4.sdr.owrxclient.model.metadata.Metadata.Type;
 import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
 import io.github.defective4.sdr.owrxclient.model.param.DSPParams;
@@ -291,7 +292,9 @@ public class OWRXSocket extends WebSocketClient {
                                             Demodulator demod = Demodulator
                                                     .valueOf(obj.get("mode").getAsString().toUpperCase());
                                             result = gson.fromJson(obj, demod.getResultClass());
-                                        } catch (IllegalArgumentException e) {}
+                                        } catch (IllegalArgumentException e) {
+                                            result = new UnknownDemodulatorResult(obj);
+                                        }
                                     }
                                 }
                                 if (result != null) ls.demodulatorResultReceived(result);

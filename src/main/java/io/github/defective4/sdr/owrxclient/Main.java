@@ -44,17 +44,17 @@ public class Main {
 
                 @Override
                 public void lowQualityAudioReceived(byte[] data) {
-//                    sdl.write(data, 0, data.length);
+                    sdl.write(data, 0, data.length);
                 }
 
                 @Override
                 public void receiverProfilesUpdated(ReceiverProfile[] profiles) {
                     ReceiverProfile profile = Arrays.stream(profiles)
-                            .filter(prof -> prof.name().equals("RTL-SDR VHF Satellites")).findAny()
+                            .filter(prof -> prof.name().equals("RTL-SDR 2m")).findAny()
                             .orElse(null);
                     client.switchProfile(profile);
-                    client.setOffsetFrequency(136.975e6f - 137.5e6f);
-                    client.setSecondaryModulation(Modulation.vdl2);
+                    client.setOffsetFrequency(-200e3f);
+                    client.setSecondaryModulation(Modulation.packet);
                 }
 
             });
