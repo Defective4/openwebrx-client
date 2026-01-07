@@ -43,7 +43,6 @@ Currently, the project is in WIP state and is not really usable.
   - [x] FT4
   - [x] VDL-M2
   - [x] DAB
-  - [ ] ISM
   - [ ] RTTY
   - [ ] Possibly more
 
