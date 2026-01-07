@@ -41,11 +41,9 @@ Currently, the project is in WIP state and is not really usable.
     - [x] CW Skimmer
   - [x] FT8
   - [x] FT4
-  - [ ] ACARS
-  - [ ] VDL-M2
+  - [x] VDL-M2
   - [ ] ISM
   - [ ] RTTY
-  - [ ] DSB
   - [ ] Possibly more
 
 ## How to use
