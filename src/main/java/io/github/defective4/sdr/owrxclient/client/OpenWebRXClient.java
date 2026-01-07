@@ -3,6 +3,7 @@ package io.github.defective4.sdr.owrxclient.client;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -80,34 +81,33 @@ public class OpenWebRXClient {
         socket.sendCommand(new SetFrequencyCommand(new FrequencyParams(frequency, key)));
     }
 
-    public void setDemodulatorOffset(int offset) {
-        setDSP(new DSPParams(null, null, null, null, null, null, null, offset));
-    }
-
-    public void setDemodulatorScope(int highCut, int lowCut) {
-        setDSP(new DSPParams(highCut, lowCut, null, null, null, null, null, null));
+    public void setDemodulatorScope(float highCut, float lowCut) {
+        setDSP(new DSPParams((int) highCut, (int) lowCut, null, null, null, null, null, null));
     }
 
     public void setDSP(DSPParams dspParams) {
-        socket.setDSP(dspParams);
+        socket.setDSP(Objects.requireNonNull(dspParams));
     }
 
     public void setModulation(Modulation modulation) {
-        setDSP(new DSPParams(null, null, null, modulation, null, null, null, null));
+        setDSP(new DSPParams(null, Objects.requireNonNull(modulation), null));
     }
 
     public void setModulation(Modulation primary, Modulation secondary) {
-        setDSP(new DSPParams(null, null, null, primary, null, null, secondary, null));
+        setDSP(new DSPParams(null, Objects.requireNonNull(primary), Objects.requireNonNull(secondary)));
     }
 
-    public void setOffsetFrequency(int offset) {
-        setDSP(new DSPParams(null, null, offset, null, null, null, null, null));
+    public void setOffsetFrequency(float offset) {
+        setDSP(new DSPParams(null, null, (int) offset, null, null, null, null, null));
     }
 
     public void setSecondaryModulation(Modulation secondary) {
-        Modulation[] a = secondary.getUnderlying();
-        setDSP(new DSPParams(null, null, null, a.length > 0 ? a[0] : Modulation.empty, null, null,
-                secondary, null));
+        Modulation[] a = Objects.requireNonNull(secondary).getUnderlying();
+        setDSP(new DSPParams(null, a.length > 0 ? a[0] : Modulation.empty, secondary));
+    }
+
+    public void setSecondaryOffset(float offset) {
+        setDSP(new DSPParams(null, null, null, null, null, null, null, (int) offset));
     }
 
     public void startDSP() {

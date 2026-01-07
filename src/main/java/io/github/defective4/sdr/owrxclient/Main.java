@@ -11,7 +11,6 @@ import io.github.defective4.sdr.owrxclient.client.OpenWebRXClient;
 import io.github.defective4.sdr.owrxclient.event.OWRXAdapter;
 import io.github.defective4.sdr.owrxclient.model.Modulation;
 import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
-import io.github.defective4.sdr.owrxclient.model.param.DSPParams;
 
 public class Main {
 
@@ -49,10 +48,11 @@ public class Main {
 
                 @Override
                 public void receiverProfilesUpdated(ReceiverProfile[] profiles) {
-                    ReceiverProfile profile = Arrays.stream(profiles).filter(prof -> prof.name().equals("RTL-SDR 80m"))
+                    ReceiverProfile profile = Arrays.stream(profiles).filter(prof -> prof.name().equals("RTL-SDR 20m"))
                             .findAny().orElse(null);
                     client.switchProfile(profile);
-                    client.setDSP(new DSPParams(3575000 - 3500000, Modulation.usb, Modulation.ft4));
+                    client.setOffsetFrequency(14.08e6f - 14e6f);
+                    client.setSecondaryModulation(Modulation.ft4);
                 }
 
             });
