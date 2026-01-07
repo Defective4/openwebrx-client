@@ -14,6 +14,7 @@ import io.github.defective4.sdr.owrxclient.model.SecondaryConfig;
 import io.github.defective4.sdr.owrxclient.model.ServerChatMessage;
 import io.github.defective4.sdr.owrxclient.model.ServerConfig;
 import io.github.defective4.sdr.owrxclient.model.demod.DemodulatorResult;
+import io.github.defective4.sdr.owrxclient.model.metadata.DABMetadata;
 import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
 
 public abstract class OWRXAdapter implements OWRXListener {
@@ -86,5 +87,8 @@ public abstract class OWRXAdapter implements OWRXListener {
 
     @Override
     public void temperatureUpdated(int temperatureC) {}
+
+    @Override
+    public void dabMetadataReceived(DABMetadata metadata) {}
 
 }

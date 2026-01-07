@@ -14,6 +14,7 @@ import io.github.defective4.sdr.owrxclient.model.SecondaryConfig;
 import io.github.defective4.sdr.owrxclient.model.ServerChatMessage;
 import io.github.defective4.sdr.owrxclient.model.ServerConfig;
 import io.github.defective4.sdr.owrxclient.model.demod.DemodulatorResult;
+import io.github.defective4.sdr.owrxclient.model.metadata.DABMetadata;
 import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
 
 public interface OWRXListener {
@@ -63,4 +64,6 @@ public interface OWRXListener {
     void signalMeterUpdated(float signalLevel);
 
     void temperatureUpdated(int temperatureC);
+
+    void dabMetadataReceived(DABMetadata metadata);
 }

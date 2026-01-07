@@ -73,6 +73,10 @@ public class OpenWebRXClient {
         sendChatMessage(new ChatMessage(username, message));
     }
 
+    public void setAudioService(int service) {
+        setDSP(new DSPParams(null, null, null, null, null, service, null, null));
+    }
+
     public void setCenterFrequency(int frequency) {
         setCenterFrequency(frequency, null);
     }

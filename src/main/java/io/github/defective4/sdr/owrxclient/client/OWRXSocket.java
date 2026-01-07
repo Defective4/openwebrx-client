@@ -44,6 +44,7 @@ import io.github.defective4.sdr.owrxclient.model.demod.Demodulator;
 import io.github.defective4.sdr.owrxclient.model.demod.DemodulatorResult;
 import io.github.defective4.sdr.owrxclient.model.demod.PlaintextResult;
 import io.github.defective4.sdr.owrxclient.model.demod.UnknownDemodulatorResult;
+import io.github.defective4.sdr.owrxclient.model.metadata.DABMetadata;
 import io.github.defective4.sdr.owrxclient.model.metadata.Metadata.Type;
 import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
 import io.github.defective4.sdr.owrxclient.model.param.DSPParams;
@@ -269,6 +270,7 @@ public class OWRXSocket extends WebSocketClient {
 
                             if (metaType != null) switch (metaType) {
                                 case WFM -> ls.rdsReceived(gson.fromJson(obj, RDSMetadata.class));
+                                case DAB -> ls.dabMetadataReceived(gson.fromJson(obj, DABMetadata.class));
                                 default -> {}
                             }
                         }

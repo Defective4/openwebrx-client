@@ -1,11 +1,13 @@
 package io.github.defective4.sdr.owrxclient.model;
 
+import java.util.Optional;
+
 public enum Modulation {
-    usb("USB", 150, 2750), am("AM", -4000, 4000), lsb("LSB", -2750, -150), nfm("FM", -4000, 4000),
+    usb("USB", 150, 2750), am("AM", -4000, 4000), nfm("FM", -4000, 4000), lsb("LSB", -2750, -150),
     acars("ACARS", am, -6000, 6000), adsb("ADSB", -1000, 1000), ais("AIS", -6250, 6250), bpsk31("BPSK31", usb),
     bpsk63("BPSK63", usb), cw("CW", 700, 900), cwdecoder("CW Decoder", new Modulation[] { usb, lsb }),
-    cwskimmer("CW Skimmer", 0, 48000), dab("DAB", -1000, 1000), dmr("DMR", -6250, 6250), drm("DRM", -5000, 5000),
-    dsc("DSC", usb), dstar("D-Star", -3250, 3250), eas("EAS", nfm), empty("Empty", -1000, 1000), fax("Fax", usb),
+    cwskimmer("CW Skimmer", 0, 48000), dab("DAB"), dmr("DMR", -6250, 6250), drm("DRM", -5000, 5000), dsc("DSC", usb),
+    dstar("D-Star", -3250, 3250), eas("EAS", nfm), empty("Empty", -1000, 1000), fax("Fax", usb),
     freedv("FreeDV", 300, 3000), fst4("FST4", usb), fst4w("FST4W", 1350, 1650), ft4("FT4", usb), ft8("FT8", usb),
     hdr("HDR", -200000, 200000), hfdl("HFDL", 0, 3000), ism("ISM", -1000, 1000), js8("JS8Call", usb), jt65("JT65", usb),
     jt9("JT9", usb), m17("M17", -6250, 6250), msk144("MSK144", usb), navtex("NAVTEX", usb), nxdn("NXDN", -3250, 3250),
@@ -18,8 +20,13 @@ public enum Modulation {
     ysf("YSF", -6250, 6250), zvei("Zvei", nfm);
 
     private final String display;
+    private final boolean hasBandpass;
     private final int lowPass, highPass;
     private final Modulation[] underlying;
+
+    private Modulation(String display) {
+        this(display, new Modulation[0], -1, 1, false);
+    }
 
     private Modulation(String display, int low, int high) {
         this(display, new Modulation[0], low, high);
@@ -38,26 +45,35 @@ public enum Modulation {
     }
 
     private Modulation(String display, Modulation[] underlying, int low, int high) {
+        this(display, underlying, low, high, true);
+    }
+
+    private Modulation(String display, Modulation[] underlying, int low, int high, boolean hasBandpass) {
         this.display = display;
         lowPass = low;
         highPass = high;
         this.underlying = underlying == null ? new Modulation[0] : underlying;
+        this.hasBandpass = hasBandpass;
     }
 
     public String getDisplay() {
         return display;
     }
 
-    public int getHighPass() {
-        return highPass;
+    public Optional<Integer> getHighPass() {
+        return Optional.ofNullable(hasBandpass ? highPass : null);
     }
 
-    public int getLowPass() {
-        return lowPass;
+    public Optional<Integer> getLowPass() {
+        return Optional.ofNullable(hasBandpass ? lowPass : null);
     }
 
     public Modulation[] getUnderlying() {
         return underlying;
+    }
+
+    public boolean isHasBandpass() {
+        return hasBandpass;
     }
 
 }
