@@ -13,6 +13,7 @@ import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
 import io.github.defective4.sdr.owrxclient.model.SecondaryConfig;
 import io.github.defective4.sdr.owrxclient.model.ServerChatMessage;
 import io.github.defective4.sdr.owrxclient.model.ServerConfig;
+import io.github.defective4.sdr.owrxclient.model.demod.DemodulatorResult;
 import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
 
 public interface OWRXListener {
@@ -29,7 +30,7 @@ public interface OWRXListener {
 
     void cpuUsageUpdated(float cpuUsage);
 
-    void demodulatorResultReceived(Object result);
+    void demodulatorResultReceived(DemodulatorResult result);
 
     void dialFrequenciesUpdated(DialFrequency[] frequencies);
 

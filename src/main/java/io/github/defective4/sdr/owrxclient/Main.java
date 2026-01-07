@@ -11,6 +11,7 @@ import io.github.defective4.sdr.owrxclient.client.OpenWebRXClient;
 import io.github.defective4.sdr.owrxclient.event.OWRXAdapter;
 import io.github.defective4.sdr.owrxclient.model.Modulation;
 import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
+import io.github.defective4.sdr.owrxclient.model.demod.DemodulatorResult;
 
 public class Main {
 
@@ -29,7 +30,7 @@ public class Main {
                 }
 
                 @Override
-                public void demodulatorResultReceived(Object result) {
+                public void demodulatorResultReceived(DemodulatorResult result) {
                     System.out.println(result);
                 }
 
@@ -43,7 +44,7 @@ public class Main {
 
                 @Override
                 public void lowQualityAudioReceived(byte[] data) {
-                    sdl.write(data, 0, data.length);
+//                    sdl.write(data, 0, data.length);
                 }
 
                 @Override

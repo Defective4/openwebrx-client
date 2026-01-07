@@ -40,6 +40,9 @@ import io.github.defective4.sdr.owrxclient.model.SecondaryConfig;
 import io.github.defective4.sdr.owrxclient.model.ServerChatMessage;
 import io.github.defective4.sdr.owrxclient.model.ServerConfig;
 import io.github.defective4.sdr.owrxclient.model.ServerMessageType;
+import io.github.defective4.sdr.owrxclient.model.demod.Demodulator;
+import io.github.defective4.sdr.owrxclient.model.demod.DemodulatorResult;
+import io.github.defective4.sdr.owrxclient.model.demod.PlaintextResult;
 import io.github.defective4.sdr.owrxclient.model.metadata.Metadata.Type;
 import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
 import io.github.defective4.sdr.owrxclient.model.param.DSPParams;
@@ -57,8 +60,6 @@ public class OWRXSocket extends WebSocketClient {
 
     private boolean audioCompressionForced;
     private final OpenWebRXClient client;
-
-    private Class<?> currentSecondary;
 
     private final ADPCMDecoder fftAdpcmDecoder = new ADPCMDecoder();
 
@@ -233,8 +234,6 @@ public class OWRXSocket extends WebSocketClient {
                                 close();
                             }
                             if (cfg.fftSize() != null) fftSize = cfg.fftSize();
-                            if (cfg.startModulation() != null)
-                                currentSecondary = cfg.startModulation().getSecondaryDataClass();
                             ls.serverConfigChanged(cfg);
                         }
                         case RECEIVER_DETAILS -> ls.receiverDetailsReceived((ReceiverDetails) serverMessage);
@@ -280,10 +279,23 @@ public class OWRXSocket extends WebSocketClient {
                             ls.secondaryConfigChanged(cfg);
                         }
                         case SECONDARY_DEMOD -> {
-                            JsonElement json = (JsonElement) serverMessage;
-                            if (currentSecondary != null) try {
-                                ls.demodulatorResultReceived(gson.fromJson(json, currentSecondary));
-                            } catch (JsonParseException e) {}
+                            JsonElement element = (JsonElement) serverMessage;
+                            if (element != null) {
+                                DemodulatorResult result = null;
+                                if (element.isJsonPrimitive()) {
+                                    result = new PlaintextResult(element.getAsString());
+                                } else if (element.isJsonObject()) {
+                                    JsonObject obj = element.getAsJsonObject();
+                                    if (obj.has("mode")) {
+                                        try {
+                                            Demodulator demod = Demodulator
+                                                    .valueOf(obj.get("mode").getAsString().toUpperCase());
+                                            result = gson.fromJson(obj, demod.getResultClass());
+                                        } catch (IllegalArgumentException e) {}
+                                    }
+                                }
+                                if (result != null) ls.demodulatorResultReceived(result);
+                            }
                         }
                         default -> {}
                     }
@@ -304,13 +316,6 @@ public class OWRXSocket extends WebSocketClient {
 
     public void setDSP(DSPParams dspParams) {
         sendCommand(new DSPControlCommand(dspParams));
-        if (dspParams.modulation() != null) {
-            if (dspParams.secondaryModulation() != null
-                    && dspParams.secondaryModulation().getSecondaryDataClass() != null)
-                currentSecondary = dspParams.secondaryModulation().getSecondaryDataClass();
-            else
-                currentSecondary = null;
-        }
     }
 
     public void startDSP() {

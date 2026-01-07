@@ -13,6 +13,7 @@ import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
 import io.github.defective4.sdr.owrxclient.model.SecondaryConfig;
 import io.github.defective4.sdr.owrxclient.model.ServerChatMessage;
 import io.github.defective4.sdr.owrxclient.model.ServerConfig;
+import io.github.defective4.sdr.owrxclient.model.demod.DemodulatorResult;
 import io.github.defective4.sdr.owrxclient.model.metadata.RDSMetadata;
 
 public abstract class OWRXAdapter implements OWRXListener {
@@ -36,7 +37,7 @@ public abstract class OWRXAdapter implements OWRXListener {
     public void cpuUsageUpdated(float cpuUsage) {}
 
     @Override
-    public void demodulatorResultReceived(Object result) {}
+    public void demodulatorResultReceived(DemodulatorResult result) {}
 
     @Override
     public void dialFrequenciesUpdated(DialFrequency[] frequencies) {}
