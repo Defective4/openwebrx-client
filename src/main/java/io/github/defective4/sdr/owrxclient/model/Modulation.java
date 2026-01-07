@@ -50,7 +50,7 @@ public enum Modulation {
         this.display = display;
         lowPass = low;
         highPass = high;
-        this.underlying = underlying;
+        this.underlying = underlying == null ? new Modulation[0] : underlying;
         this.secondaryDataClass = secondaryDataClass;
     }
 
@@ -68,6 +68,10 @@ public enum Modulation {
 
     public Class<?> getSecondaryDataClass() {
         return secondaryDataClass;
+    }
+
+    public Modulation[] getUnderlying() {
+        return underlying;
     }
 
 }

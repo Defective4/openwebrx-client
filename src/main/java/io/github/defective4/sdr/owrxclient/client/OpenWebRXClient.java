@@ -8,7 +8,6 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.github.defective4.sdr.owrxclient.command.ClientChatCommand;
-import io.github.defective4.sdr.owrxclient.command.ClientCommand;
 import io.github.defective4.sdr.owrxclient.command.ConnectionPropertiesCommand;
 import io.github.defective4.sdr.owrxclient.command.SelectProfileCommand;
 import io.github.defective4.sdr.owrxclient.command.SetFrequencyCommand;
@@ -16,6 +15,7 @@ import io.github.defective4.sdr.owrxclient.compression.AudioCompression;
 import io.github.defective4.sdr.owrxclient.compression.FFTCompression;
 import io.github.defective4.sdr.owrxclient.event.OWRXListener;
 import io.github.defective4.sdr.owrxclient.model.ChatMessage;
+import io.github.defective4.sdr.owrxclient.model.Modulation;
 import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
 import io.github.defective4.sdr.owrxclient.model.param.ConnectionParams;
 import io.github.defective4.sdr.owrxclient.model.param.DSPParams;
@@ -72,10 +72,6 @@ public class OpenWebRXClient {
         sendChatMessage(new ChatMessage(username, message));
     }
 
-    public void sendCommand(ClientCommand command) {
-        socket.sendCommand(command);
-    }
-
     public void setCenterFrequency(int frequency) {
         setCenterFrequency(frequency, null);
     }
@@ -84,8 +80,34 @@ public class OpenWebRXClient {
         socket.sendCommand(new SetFrequencyCommand(new FrequencyParams(frequency, key)));
     }
 
+    public void setDemodulatorOffset(int offset) {
+        setDSP(new DSPParams(null, null, null, null, null, null, null, offset));
+    }
+
+    public void setDemodulatorScope(int highCut, int lowCut) {
+        setDSP(new DSPParams(highCut, lowCut, null, null, null, null, null, null));
+    }
+
     public void setDSP(DSPParams dspParams) {
         socket.setDSP(dspParams);
+    }
+
+    public void setModulation(Modulation modulation) {
+        setDSP(new DSPParams(null, null, null, modulation, null, null, null, null));
+    }
+
+    public void setModulation(Modulation primary, Modulation secondary) {
+        setDSP(new DSPParams(null, null, null, primary, null, null, secondary, null));
+    }
+
+    public void setOffsetFrequency(int offset) {
+        setDSP(new DSPParams(null, null, offset, null, null, null, null, null));
+    }
+
+    public void setSecondaryModulation(Modulation secondary) {
+        Modulation[] a = secondary.getUnderlying();
+        setDSP(new DSPParams(null, null, null, a.length > 0 ? a[0] : Modulation.empty, null, null,
+                secondary, null));
     }
 
     public void startDSP() {
