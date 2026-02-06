@@ -34,7 +34,7 @@ Currently, the project is in WIP state and is not really usable.
 - [x] Chat (both sending and receiving)
 - [x] Signal meter
 - [x] Analog modes
-- [ ] Digital modes
+- [x] Digital modes
   - [x] Radio Data System
   - [x] CW
     - [x] CW Decoder
@@ -43,7 +43,7 @@ Currently, the project is in WIP state and is not really usable.
   - [x] FT4
   - [x] VDL-M2
   - [x] DAB
-  - [ ] RTTY
+  - [x] RTTY
   - [ ] Possibly more
 
 ## How to use
