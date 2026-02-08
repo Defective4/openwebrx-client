@@ -1,5 +1,8 @@
 package io.github.defective4.sdr.owrxclient.model;
 
+import java.awt.Color;
+import java.util.Arrays;
+
 import com.google.gson.annotations.SerializedName;
 
 public record ServerConfig(@SerializedName("audio_compression") String audioCompression,
@@ -19,4 +22,8 @@ public record ServerConfig(@SerializedName("audio_compression") String audioComp
         @SerializedName("profile_id") String profileId, @SerializedName("start_freq") Integer startFrequency,
         @SerializedName("start_mod") Modulation startModulation, @SerializedName("sdr_id") String sdrId,
         @SerializedName("samp_rate") Integer sampleRate, @SerializedName("tuning_step") Integer tuningStep) {
+
+    public Color[] mappedWaterfallColors() {
+        return Arrays.stream(waterfallColors).map(Color::new).toArray(Color[]::new);
+    }
 }
