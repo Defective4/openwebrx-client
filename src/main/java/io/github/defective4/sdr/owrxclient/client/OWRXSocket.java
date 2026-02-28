@@ -157,21 +157,22 @@ public class OWRXSocket extends WebSocketClient {
                 boolean hi = type == 0x04;
                 byte[] data = new byte[bytes.remaining()];
                 bytes.get(data);
+                byte[] pcm = data;
+                if (audioCompression == AudioCompression.ADPCM) {
+                    short[] decoded = audioAdpcmDecoder.decodeWithSync(data);
+                    ByteBuffer buffer = ByteBuffer.allocate(decoded.length * 2).order(ByteOrder.LITTLE_ENDIAN);
+                    for (short s : decoded) buffer.putShort(s);
+                    pcm = buffer.array();
+                }
+                if (pcm.length % 2 != 0) {
+                    pcm = Arrays.copyOf(pcm, pcm.length + 1);
+                }
+                byte[] finalPCM = pcm;
                 client.getListeners().forEach(ls -> {
-                    byte[] pcm = data;
-                    if (audioCompression == AudioCompression.ADPCM) {
-                        short[] decoded = audioAdpcmDecoder.decodeWithSync(data);
-                        ByteBuffer buffer = ByteBuffer.allocate(decoded.length * 2).order(ByteOrder.LITTLE_ENDIAN);
-                        for (short s : decoded) buffer.putShort(s);
-                        pcm = buffer.array();
-                    }
-                    if (pcm.length % 2 != 0) {
-                        pcm = Arrays.copyOf(pcm, pcm.length + 1);
-                    }
                     if (hi)
-                        ls.highQualityAudioReceived(pcm);
+                        ls.highQualityAudioReceived(finalPCM);
                     else
-                        ls.lowQualityAudioReceived(pcm);
+                        ls.lowQualityAudioReceived(finalPCM);
                 });
             }
             default -> {}
