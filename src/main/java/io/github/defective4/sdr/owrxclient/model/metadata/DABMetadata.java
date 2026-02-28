@@ -6,12 +6,12 @@ import java.util.Optional;
 import com.google.gson.annotations.SerializedName;
 
 public class DABMetadata {
-    private final Map<String, String> programmes;
     @SerializedName("ensemble_id")
     private final Integer ensembleID;
-    private final Long timestamp;
     @SerializedName("ensemble_label")
     private final String ensembleLabel;
+    private final Map<String, String> programmes;
+    private final Long timestamp;
 
     public DABMetadata(Map<String, String> programmes, Integer ensembleID, Long timestamp, String ensembleLabel) {
         this.programmes = programmes;
@@ -20,20 +20,20 @@ public class DABMetadata {
         this.ensembleLabel = ensembleLabel;
     }
 
-    public Optional<Map<String, String>> getProgrammes() {
-        return Optional.ofNullable(programmes);
-    }
-
     public Optional<Integer> getEnsembleID() {
         return Optional.ofNullable(ensembleID);
     }
 
-    public Optional<Long> getTimestamp() {
-        return Optional.ofNullable(timestamp);
-    }
-
     public Optional<String> getEnsembleLabel() {
         return Optional.ofNullable(ensembleLabel);
+    }
+
+    public Optional<Map<String, String>> getProgrammes() {
+        return Optional.ofNullable(programmes);
+    }
+
+    public Optional<Long> getTimestamp() {
+        return Optional.ofNullable(timestamp);
     }
 
     @Override

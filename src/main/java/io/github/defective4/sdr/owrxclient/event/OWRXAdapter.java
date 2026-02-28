@@ -38,6 +38,9 @@ public abstract class OWRXAdapter implements OWRXListener {
     public void cpuUsageUpdated(float cpuUsage) {}
 
     @Override
+    public void dabMetadataReceived(DABMetadata metadata) {}
+
+    @Override
     public void demodulatorResultReceived(DemodulatorResult result) {}
 
     @Override
@@ -87,8 +90,5 @@ public abstract class OWRXAdapter implements OWRXListener {
 
     @Override
     public void temperatureUpdated(int temperatureC) {}
-
-    @Override
-    public void dabMetadataReceived(DABMetadata metadata) {}
 
 }

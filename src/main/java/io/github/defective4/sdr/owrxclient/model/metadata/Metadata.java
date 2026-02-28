@@ -2,7 +2,7 @@ package io.github.defective4.sdr.owrxclient.model.metadata;
 
 public class Metadata {
     public static enum Type {
-        WFM, DAB;
+        DAB, WFM;
     }
 
     private final Type type;

@@ -182,6 +182,7 @@ public class OWRXSocket extends WebSocketClient {
 
     @Override
     public void onMessage(String message) {
+        List<OWRXListener> listeners = client.getListeners();
         if (!handshakeCompleted) {
             if (!message.startsWith(HS_HEADER + " ")) {
                 close();
@@ -206,7 +207,7 @@ public class OWRXSocket extends WebSocketClient {
             }
 
             handshakeCompleted = true;
-            client.getListeners().forEach(ls -> ls.handshakeReceived(serverFlavor, serverVersion));
+            listeners.forEach(ls -> ls.handshakeReceived(serverFlavor, serverVersion));
             return;
         }
         try {
@@ -224,7 +225,7 @@ public class OWRXSocket extends WebSocketClient {
                         } catch (IllegalArgumentException e) {
                             IOException ex = new IOException(
                                     "Server requested an unknown audio compression: " + cfg.audioCompression());
-                            client.getListeners().forEach(ls -> ls.clientErrored(ex));
+                            listeners.forEach(ls -> ls.clientErrored(ex));
                             close();
                             return;
                         }
@@ -234,7 +235,7 @@ public class OWRXSocket extends WebSocketClient {
                         } catch (IllegalArgumentException e) {
                             IOException ex = new IOException(
                                     "Server requested an unknown FFT compression: " + cfg.fftCompression());
-                            client.getListeners().forEach(ls -> ls.clientErrored(ex));
+                            listeners.forEach(ls -> ls.clientErrored(ex));
                             close();
                             return;
                         }
@@ -258,8 +259,7 @@ public class OWRXSocket extends WebSocketClient {
                                     }
                                 }
                             }
-                            if (result != null)
-                                for (OWRXListener ls : client.getListeners()) ls.demodulatorResultReceived(result);
+                            if (result != null) for (OWRXListener ls : listeners) ls.demodulatorResultReceived(result);
                         }
                     }
                     case FEATURES -> {
@@ -271,11 +271,16 @@ public class OWRXSocket extends WebSocketClient {
                                 features.add(Feature.valueOf(entry.getKey().toUpperCase().replace("-", "_")));
                             } catch (IllegalArgumentException e) {}
                         }
-                        client.getListeners().forEach(ls -> ls.featuresUpdated(Collections.unmodifiableList(features)));
+                        listeners.forEach(ls -> ls.featuresUpdated(Collections.unmodifiableList(features)));
+                    }
+                    case MODES -> {
+                        ReceiverMode[] modes = (ReceiverMode[]) serverMessage;
+                        client.getCoreListener().receiverModesUpdated(modes);
+                        listeners.forEach(ls -> ls.receiverModesUpdated(modes));
                     }
                     default -> {}
                 }
-                client.getListeners().forEach(ls -> {
+                listeners.forEach(ls -> {
                     switch (type) {
                         case CONFIG -> ls.serverConfigChanged((ServerConfig) serverMessage);
                         case RECEIVER_DETAILS -> ls.receiverDetailsReceived((ReceiverDetails) serverMessage);
@@ -283,7 +288,6 @@ public class OWRXSocket extends WebSocketClient {
                         case BOOKMARKS -> ls.bookmarksUpdated((Bookmark[]) serverMessage);
                         case BANDS -> ls.bandsUpdated((Band[]) serverMessage);
                         case CLIENTS -> ls.numberOfClientsUpdated((int) serverMessage);
-                        case MODES -> ls.receiverModesUpdated((ReceiverMode[]) serverMessage);
                         case CPUUSAGE -> ls.cpuUsageUpdated((float) serverMessage);
                         case SMETER -> ls.signalMeterUpdated((float) serverMessage);
                         case TEMPERATURE -> ls.temperatureUpdated((int) serverMessage);

@@ -9,7 +9,6 @@ import javax.sound.sampled.SourceDataLine;
 
 import io.github.defective4.sdr.owrxclient.client.OpenWebRXClient;
 import io.github.defective4.sdr.owrxclient.event.OWRXAdapter;
-import io.github.defective4.sdr.owrxclient.model.Modulation;
 import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
 import io.github.defective4.sdr.owrxclient.model.demod.DemodulatorResult;
 
@@ -17,11 +16,12 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            SourceDataLine sdl = AudioSystem.getSourceDataLine(new AudioFormat(48000, 16, 1, true, false));
+            SourceDataLine sdl = AudioSystem.getSourceDataLine(new AudioFormat(12000, 16, 1, true, false));
             sdl.open();
             sdl.start();
 
             OpenWebRXClient client = new OpenWebRXClient(URI.create("wss://radio.raspberry.local/ws/"));
+
             client.addListener(new OWRXAdapter() {
 
                 @Override
@@ -41,20 +41,20 @@ public class Main {
 
                 @Override
                 public void highQualityAudioReceived(byte[] data) {
-                    sdl.write(data, 0, data.length);
                 }
 
                 @Override
                 public void lowQualityAudioReceived(byte[] data) {
+                    sdl.write(data, 0, data.length);
                 }
 
                 @Override
                 public void receiverProfilesUpdated(ReceiverProfile[] profiles) {
                     ReceiverProfile profile = Arrays.stream(profiles)
-                            .filter(prof -> prof.name().equals("RTL-SDR DAB+ 11A")).findAny().orElse(null);
+                            .filter(prof -> prof.name().equals("RTL-SDR 2m")).findAny().orElse(null);
                     client.switchProfile(profile);
 //                    client.setOffsetFrequency(-200e3f);
-                    client.setModulation(Modulation.dab);
+//                    client.setModulation(Modulation.nfm);
                 }
 
             });

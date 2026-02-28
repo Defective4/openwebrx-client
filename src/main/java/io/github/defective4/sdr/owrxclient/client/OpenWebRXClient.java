@@ -2,11 +2,14 @@ package io.github.defective4.sdr.owrxclient.client;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import io.github.defective4.sdr.owrxclient.command.ClientChatCommand;
 import io.github.defective4.sdr.owrxclient.command.ConnectionPropertiesCommand;
@@ -14,9 +17,10 @@ import io.github.defective4.sdr.owrxclient.command.SelectProfileCommand;
 import io.github.defective4.sdr.owrxclient.command.SetFrequencyCommand;
 import io.github.defective4.sdr.owrxclient.compression.AudioCompression;
 import io.github.defective4.sdr.owrxclient.compression.FFTCompression;
+import io.github.defective4.sdr.owrxclient.event.OWRXAdapter;
 import io.github.defective4.sdr.owrxclient.event.OWRXListener;
 import io.github.defective4.sdr.owrxclient.model.ChatMessage;
-import io.github.defective4.sdr.owrxclient.model.Modulation;
+import io.github.defective4.sdr.owrxclient.model.ReceiverMode;
 import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
 import io.github.defective4.sdr.owrxclient.model.param.ConnectionParams;
 import io.github.defective4.sdr.owrxclient.model.param.DSPParams;
@@ -24,11 +28,23 @@ import io.github.defective4.sdr.owrxclient.model.param.FrequencyParams;
 import io.github.defective4.sdr.owrxclient.model.param.ProfileParams;
 
 public class OpenWebRXClient {
+    private final OWRXListener coreListener;
     private final List<OWRXListener> listeners = new CopyOnWriteArrayList<>();
+    private final Set<ReceiverMode> modes = new HashSet<>();
+
     private final OWRXSocket socket;
 
     public OpenWebRXClient(URI uri) {
         socket = new OWRXSocket(uri, this);
+        coreListener = new OWRXAdapter() {
+            @Override
+            public void receiverModesUpdated(ReceiverMode[] modes) {
+                synchronized (OpenWebRXClient.this.modes) {
+                    OpenWebRXClient.this.modes.clear();
+                    Collections.addAll(OpenWebRXClient.this.modes, modes);
+                }
+            }
+        };
     }
 
     public boolean addListener(OWRXListener listener) {
@@ -57,8 +73,28 @@ public class OpenWebRXClient {
         return socket.getAudioCompression();
     }
 
+    public OWRXListener getCoreListener() {
+        return coreListener;
+    }
+
     public List<OWRXListener> getListeners() {
         return Collections.unmodifiableList(listeners);
+    }
+
+    public Optional<ReceiverMode> getModeByName(String name) {
+        synchronized (modes) {
+            return modes.stream().filter(mode -> mode.modulation().equalsIgnoreCase(name)).findAny();
+        }
+    }
+
+    public Set<String> getModeNames() {
+        synchronized (modes) {
+            return modes.stream().map(ReceiverMode::modulation).collect(Collectors.toSet());
+        }
+    }
+
+    public Set<ReceiverMode> getModes() {
+        return Collections.unmodifiableSet(modes);
     }
 
     public boolean removeListener(OWRXListener listener) {
@@ -93,21 +129,8 @@ public class OpenWebRXClient {
         socket.setDSP(Objects.requireNonNull(dspParams));
     }
 
-    public void setModulation(Modulation modulation) {
-        setDSP(new DSPParams(null, Objects.requireNonNull(modulation), null));
-    }
-
-    public void setModulation(Modulation primary, Modulation secondary) {
-        setDSP(new DSPParams(null, Objects.requireNonNull(primary), Objects.requireNonNull(secondary)));
-    }
-
     public void setOffsetFrequency(float offset) {
         setDSP(new DSPParams(null, null, (int) offset, null, null, null, null, null));
-    }
-
-    public void setSecondaryModulation(Modulation secondary) {
-        Modulation[] a = Objects.requireNonNull(secondary).getUnderlying();
-        setDSP(new DSPParams(null, a.length > 0 ? a[0] : Modulation.empty, secondary));
     }
 
     public void setSecondaryOffset(float offset) {

@@ -1,5 +1,5 @@
 package io.github.defective4.sdr.owrxclient.model;
 
-public record DialFrequency(int frequency, Modulation mode) {
+public record DialFrequency(int frequency, String mode) {
 
 }

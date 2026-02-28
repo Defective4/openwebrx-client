@@ -31,6 +31,8 @@ public interface OWRXListener {
 
     void cpuUsageUpdated(float cpuUsage);
 
+    void dabMetadataReceived(DABMetadata metadata);
+
     void demodulatorResultReceived(DemodulatorResult result);
 
     void dialFrequenciesUpdated(DialFrequency[] frequencies);
@@ -64,6 +66,4 @@ public interface OWRXListener {
     void signalMeterUpdated(float signalLevel);
 
     void temperatureUpdated(int temperatureC);
-
-    void dabMetadataReceived(DABMetadata metadata);
 }
