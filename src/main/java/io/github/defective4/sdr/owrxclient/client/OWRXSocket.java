@@ -28,6 +28,7 @@ import io.github.defective4.sdr.owrxclient.command.DSPControlCommand;
 import io.github.defective4.sdr.owrxclient.compression.ADPCMDecoder;
 import io.github.defective4.sdr.owrxclient.compression.AudioCompression;
 import io.github.defective4.sdr.owrxclient.compression.FFTCompression;
+import io.github.defective4.sdr.owrxclient.event.OWRXListener;
 import io.github.defective4.sdr.owrxclient.model.Band;
 import io.github.defective4.sdr.owrxclient.model.BatteryInfo;
 import io.github.defective4.sdr.owrxclient.model.Bookmark;
@@ -215,46 +216,73 @@ public class OWRXSocket extends WebSocketClient {
                 ServerMessageType type = ServerMessageType.valueOf(root.get("type").getAsString().toUpperCase());
                 Object serverMessage = gson.fromJson(root.has("value") ? root.get("value") : root,
                         type.getModelClass());
+                switch (type) {
+                    case CONFIG -> {
+                        ServerConfig cfg = (ServerConfig) serverMessage;
+                        if (cfg.audioCompression() != null && !audioCompressionForced) try {
+                            audioCompression = AudioCompression.valueOf(cfg.audioCompression().toUpperCase());
+                        } catch (IllegalArgumentException e) {
+                            IOException ex = new IOException(
+                                    "Server requested an unknown audio compression: " + cfg.audioCompression());
+                            client.getListeners().forEach(ls -> ls.clientErrored(ex));
+                            close();
+                            return;
+                        }
+
+                        if (cfg.fftCompression() != null && !fftCompressionForced) try {
+                            fftCompression = FFTCompression.valueOf(cfg.fftCompression().toUpperCase());
+                        } catch (IllegalArgumentException e) {
+                            IOException ex = new IOException(
+                                    "Server requested an unknown FFT compression: " + cfg.fftCompression());
+                            client.getListeners().forEach(ls -> ls.clientErrored(ex));
+                            close();
+                            return;
+                        }
+                        if (cfg.fftSize() != null) fftSize = cfg.fftSize();
+                    }
+                    case SECONDARY_DEMOD -> {
+                        JsonElement element = (JsonElement) serverMessage;
+                        if (element != null) {
+                            DemodulatorResult result = null;
+                            if (element.isJsonPrimitive()) {
+                                result = new PlaintextResult(element.getAsString());
+                            } else if (element.isJsonObject()) {
+                                JsonObject obj = element.getAsJsonObject();
+                                if (obj.has("mode")) {
+                                    try {
+                                        Demodulator demod = Demodulator
+                                                .valueOf(obj.get("mode").getAsString().toUpperCase());
+                                        result = gson.fromJson(obj, demod.getResultClass());
+                                    } catch (IllegalArgumentException e) {
+                                        result = new UnknownDemodulatorResult(obj);
+                                    }
+                                }
+                            }
+                            if (result != null)
+                                for (OWRXListener ls : client.getListeners()) ls.demodulatorResultReceived(result);
+                        }
+                    }
+                    case FEATURES -> {
+                        Map<String, Boolean> featureMap = (Map<String, Boolean>) serverMessage;
+                        List<Feature> features = new ArrayList<>();
+                        for (Entry<String, Boolean> entry : featureMap.entrySet()) {
+                            if (!entry.getValue()) continue;
+                            try {
+                                features.add(Feature.valueOf(entry.getKey().toUpperCase().replace("-", "_")));
+                            } catch (IllegalArgumentException e) {}
+                        }
+                        client.getListeners().forEach(ls -> ls.featuresUpdated(Collections.unmodifiableList(features)));
+                    }
+                    default -> {}
+                }
                 client.getListeners().forEach(ls -> {
                     switch (type) {
-                        case CONFIG -> {
-                            ServerConfig cfg = (ServerConfig) serverMessage;
-                            if (cfg.audioCompression() != null && !audioCompressionForced) try {
-                                audioCompression = AudioCompression.valueOf(cfg.audioCompression().toUpperCase());
-                            } catch (IllegalArgumentException e) {
-                                IOException ex = new IOException(
-                                        "Server requested an unknown audio compression: " + cfg.audioCompression());
-                                client.getListeners().forEach(l -> ls.clientErrored(ex));
-                                close();
-                            }
-
-                            if (cfg.fftCompression() != null && !fftCompressionForced) try {
-                                fftCompression = FFTCompression.valueOf(cfg.fftCompression().toUpperCase());
-                            } catch (IllegalArgumentException e) {
-                                IOException ex = new IOException(
-                                        "Server requested an unknown FFT compression: " + cfg.fftCompression());
-                                client.getListeners().forEach(l -> ls.clientErrored(ex));
-                                close();
-                            }
-                            if (cfg.fftSize() != null) fftSize = cfg.fftSize();
-                            ls.serverConfigChanged(cfg);
-                        }
+                        case CONFIG -> ls.serverConfigChanged((ServerConfig) serverMessage);
                         case RECEIVER_DETAILS -> ls.receiverDetailsReceived((ReceiverDetails) serverMessage);
                         case DIAL_FREQUENCIES -> ls.dialFrequenciesUpdated((DialFrequency[]) serverMessage);
                         case BOOKMARKS -> ls.bookmarksUpdated((Bookmark[]) serverMessage);
                         case BANDS -> ls.bandsUpdated((Band[]) serverMessage);
                         case CLIENTS -> ls.numberOfClientsUpdated((int) serverMessage);
-                        case FEATURES -> {
-                            Map<String, Boolean> featureMap = (Map<String, Boolean>) serverMessage;
-                            List<Feature> features = new ArrayList<>();
-                            for (Entry<String, Boolean> entry : featureMap.entrySet()) {
-                                if (!entry.getValue()) continue;
-                                try {
-                                    features.add(Feature.valueOf(entry.getKey().toUpperCase().replace("-", "_")));
-                                } catch (IllegalArgumentException e) {}
-                            }
-                            ls.featuresUpdated(Collections.unmodifiableList(features));
-                        }
                         case MODES -> ls.receiverModesUpdated((ReceiverMode[]) serverMessage);
                         case CPUUSAGE -> ls.cpuUsageUpdated((float) serverMessage);
                         case SMETER -> ls.signalMeterUpdated((float) serverMessage);
@@ -281,27 +309,6 @@ public class OWRXSocket extends WebSocketClient {
                             SecondaryConfig cfg = (SecondaryConfig) serverMessage;
                             if (cfg.secondaryFFTSize() != null) secondaryFFTSize = cfg.secondaryFFTSize();
                             ls.secondaryConfigChanged(cfg);
-                        }
-                        case SECONDARY_DEMOD -> {
-                            JsonElement element = (JsonElement) serverMessage;
-                            if (element != null) {
-                                DemodulatorResult result = null;
-                                if (element.isJsonPrimitive()) {
-                                    result = new PlaintextResult(element.getAsString());
-                                } else if (element.isJsonObject()) {
-                                    JsonObject obj = element.getAsJsonObject();
-                                    if (obj.has("mode")) {
-                                        try {
-                                            Demodulator demod = Demodulator
-                                                    .valueOf(obj.get("mode").getAsString().toUpperCase());
-                                            result = gson.fromJson(obj, demod.getResultClass());
-                                        } catch (IllegalArgumentException e) {
-                                            result = new UnknownDemodulatorResult(obj);
-                                        }
-                                    }
-                                }
-                                if (result != null) ls.demodulatorResultReceived(result);
-                            }
                         }
                         default -> {}
                     }
