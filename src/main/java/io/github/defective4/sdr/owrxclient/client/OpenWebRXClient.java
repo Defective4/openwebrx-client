@@ -19,6 +19,7 @@ import io.github.defective4.sdr.owrxclient.compression.AudioCompression;
 import io.github.defective4.sdr.owrxclient.compression.FFTCompression;
 import io.github.defective4.sdr.owrxclient.event.OWRXAdapter;
 import io.github.defective4.sdr.owrxclient.event.OWRXListener;
+import io.github.defective4.sdr.owrxclient.model.Bandpass;
 import io.github.defective4.sdr.owrxclient.model.ChatMessage;
 import io.github.defective4.sdr.owrxclient.model.ReceiverMode;
 import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
@@ -127,6 +128,21 @@ public class OpenWebRXClient {
 
     public void setDSP(DSPParams dspParams) {
         socket.setDSP(Objects.requireNonNull(dspParams));
+    }
+
+    public void setModulation(ReceiverMode mode) {
+        String[] underlying = mode.underlying();
+        String secondary = underlying != null && underlying.length > 0 ? underlying[0] : null;
+        ReceiverMode secondaryMode = secondary == null || secondary.equalsIgnoreCase("empty") ? null
+                : getModeByName(secondary).orElseThrow(
+                        () -> new IllegalArgumentException("This mode has an unrecognized underlying mode"));
+        setModulation(mode, secondaryMode);
+    }
+
+    public void setModulation(ReceiverMode mode, ReceiverMode underlying) {
+        Bandpass bp = (underlying == null ? mode : underlying).bandpass();
+        setDSP(new DSPParams(bp == null ? null : bp.highCut(), bp == null ? null : bp.lowCut(), null, mode.modulation(),
+                null, null, underlying == null ? null : underlying.modulation(), null));
     }
 
     public void setOffsetFrequency(float offset) {

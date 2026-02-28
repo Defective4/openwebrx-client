@@ -40,8 +40,7 @@ public class Main {
                 }
 
                 @Override
-                public void highQualityAudioReceived(byte[] data) {
-                }
+                public void highQualityAudioReceived(byte[] data) {}
 
                 @Override
                 public void lowQualityAudioReceived(byte[] data) {
@@ -50,9 +49,14 @@ public class Main {
 
                 @Override
                 public void receiverProfilesUpdated(ReceiverProfile[] profiles) {
-                    ReceiverProfile profile = Arrays.stream(profiles)
-                            .filter(prof -> prof.name().equals("RTL-SDR 2m")).findAny().orElse(null);
+                    ReceiverProfile profile = Arrays.stream(profiles).filter(prof -> prof.name().equals("RTL-SDR 2m"))
+                            .findAny().orElse(null);
                     client.switchProfile(profile);
+                    try {
+                        client.setModulation(client.getModeByName("packet").get());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 //                    client.setOffsetFrequency(-200e3f);
 //                    client.setModulation(Modulation.nfm);
                 }
