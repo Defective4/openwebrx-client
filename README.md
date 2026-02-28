@@ -2,7 +2,7 @@
 A standalone client library for OpenWebRX(+) receivers
 
 ## About
-This project is a client library for [OpenWebRX](https://www.openwebrx.de/) and [OpenWebRX+](https://github.com/luarvique/openwebrx) online SDRs written in Java.  
+This project is a Java client library for [OpenWebRX](https://www.openwebrx.de/) and [OpenWebRX+](https://github.com/luarvique/openwebrx) online SDRs.  
 It aims to implement most of OWRX's features, including audio (obviously), FFT, demodulators, and more.  
 Currently, the project is in WIP state, there is no stable release.  
 
