@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 public record ServerConfig(@SerializedName("audio_compression") String audioCompression,
         @SerializedName("allow_audio_recording") Boolean audioRecordingEnabled,
-        @SerializedName("callsign_url") String callsignUL,
+        @SerializedName("callsign_url") String callsignURL,
         @SerializedName("allow_center_freq_changes") Boolean centerFrequencyChangesEnabled,
         @SerializedName("allow_chat") Boolean chatEnabled, @SerializedName("fft_compression") String fftCompression,
         @SerializedName("fft_size") Integer fftSize, @SerializedName("flight_url") String flightURL,
