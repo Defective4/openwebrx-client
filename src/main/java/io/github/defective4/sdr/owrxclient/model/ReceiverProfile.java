@@ -7,4 +7,10 @@ public record ReceiverProfile(String id, String name) {
     public UUID[] uuids() {
         return Arrays.stream(id.split("\\|")).map(UUID::fromString).toArray(UUID[]::new);
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
 }
