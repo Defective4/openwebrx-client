@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -165,11 +164,11 @@ public class OpenWebRXClient {
         socket.sendCommand(new SelectProfileCommand(new ProfileParams(profile, key)));
     }
 
-    public void switchProfile(UUID[] profile) {
+    public void switchProfile(String[] profile) {
         socket.sendCommand(new SelectProfileCommand(new ProfileParams(profile)));
     }
 
-    public void switchProfile(UUID[] profile, String key) {
+    public void switchProfile(String[] profile, String key) {
         socket.sendCommand(new SelectProfileCommand(new ProfileParams(profile, key)));
     }
 

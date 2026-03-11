@@ -1,8 +1,5 @@
 package io.github.defective4.sdr.owrxclient.model.param;
 
-import java.util.Arrays;
-import java.util.UUID;
-
 import io.github.defective4.sdr.owrxclient.model.ReceiverProfile;
 
 public class ProfileParams {
@@ -17,12 +14,12 @@ public class ProfileParams {
         this(profile.uuids(), key);
     }
 
-    public ProfileParams(UUID[] profile) {
+    public ProfileParams(String[] profile) {
         this(profile, null);
     }
 
-    public ProfileParams(UUID[] profile, String key) {
-        this.profile = String.join("|", Arrays.stream(profile).map(UUID::toString).toArray(String[]::new));
+    public ProfileParams(String[] profile, String key) {
+        this.profile = String.join("|", profile);
         this.key = key;
     }
 
